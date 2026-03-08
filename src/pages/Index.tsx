@@ -1263,7 +1263,7 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
               }`}>
                 {line.type === "final" ? "\u25C6" : line.type === "success" ? "\u2713" : line.type === "system" ? "\u25B8" : "\u2502"}
               </span>
-              {line.text}
+              <span className={line.type === "final" ? "glitch-text glow-text" : ""}>{line.text}</span>
               {i === visibleLines - 1 && line.type !== "final" && (
                 <motion.span
                   className="inline-block w-1.5 h-3 bg-jarvis-cyan/60 ml-0.5"
