@@ -427,7 +427,7 @@ const subsystems = [
       { key: "Audio", val: "STT/TTS Pipeline" },
     ],
     desc: "The Master node runs Linux, handling all AI inference, computer vision, speech processing, and high-level decision making in real time.",
-    img: jarvisCloseup,
+    img: boardRaspi,
   },
   {
     id: "motor",
@@ -441,7 +441,7 @@ const subsystems = [
       { key: "Safety", val: "30cm Kill Zone" },
     ],
     desc: "The Muscle handles real-time motor control with a hardware safety override — if an obstacle is within 30cm, it ignores AI commands entirely.",
-    img: jarvisHero,
+    img: boardArduino,
   },
   {
     id: "sensors",
@@ -455,7 +455,7 @@ const subsystems = [
       { key: "Power", val: "~50mA Ultra-Low" },
     ],
     desc: "The Bouncer runs an ultra-low-power detection loop, waking the entire system when a human enters the 1-meter perimeter zone.",
-    img: jarvisShowcase,
+    img: boardUno,
   },
   {
     id: "leds",
