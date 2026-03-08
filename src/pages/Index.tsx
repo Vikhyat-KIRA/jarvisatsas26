@@ -946,7 +946,6 @@ function BuildTimeline() {
 }
 
 /* ─── QR Code Section ─── */
-import qrCodeImage from "@/assets/qr-code.png";
 
 function QRSection() {
   const ref = useRef<HTMLDivElement>(null);
