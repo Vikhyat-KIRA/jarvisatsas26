@@ -810,7 +810,7 @@ function Team() {
         <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.4, ease }} className="text-center mb-12">
           <p className="text-[9px] tracking-[0.5em] uppercase text-muted-foreground/50 mb-5">Fabrication Team</p>
           <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
-            {["Aayush Agarwal", "Sreshth Adukia", "Adhyansh Kumar", "Rudraksh Sharma"].map((name, i) => (
+            {["Aayush Agarwal", "Shreshth Adukia", "Adhyansh Kumar", "Rudraksh Sharma"].map((name, i) => (
               <motion.div key={name} initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.55 + i * 0.08, ease }}
                 className="group relative rounded-xl border border-border/25 bg-card/20 backdrop-blur-sm py-5 px-4 hover:border-jarvis-cyan/15 transition-all duration-500 overflow-hidden"
               >
