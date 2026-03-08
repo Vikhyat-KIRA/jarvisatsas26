@@ -647,17 +647,42 @@ function TechShowcase() {
 }
 
 /* ─── Documentation ─── */
+const DOCS_PASSWORD = "Jarvis@2026";
 const docs = [
-  { name: "The JARVIS Manifesto", desc: "Engineering philosophy & system design", file: "THE_JARVIS_MANIFESTO.docx" },
-  { name: "The JARVIS Compendium", desc: "Complete reference encyclopedia", file: "THE_JARVIS_COMPENDIUM.docx" },
-  { name: "Fabrication Guide", desc: "Physical build manual", file: "JARVIS_FABRICATION_GUIDE.docx" },
-  { name: "Print Manual", desc: "Step-by-step build, wiring & code", file: "JARVIS_PRINT_MANUAL.docx" },
-  { name: "The Complete Archive", desc: "Master 131-page reference", file: "THE_COMPLETE_ARCHIVE.docx" },
+  { name: "The JARVIS Manifesto", desc: "Engineering philosophy & system design", file: "THE_JARVIS_MANIFESTO.docx", locked: false },
+  { name: "The JARVIS Compendium", desc: "Complete reference encyclopedia", file: "THE_JARVIS_COMPENDIUM.docx", locked: true },
+  { name: "Fabrication Guide", desc: "Physical build manual", file: "JARVIS_FABRICATION_GUIDE.docx", locked: true },
+  { name: "Print Manual", desc: "Step-by-step build, wiring & code", file: "JARVIS_PRINT_MANUAL.docx", locked: true },
+  { name: "The Complete Archive", desc: "Master 131-page reference", file: "THE_COMPLETE_ARCHIVE.docx", locked: true },
 ];
 
 function Documentation() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
+  const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem("jarvis_docs_unlocked") === "true");
+  const [showPrompt, setShowPrompt] = useState<string | null>(null);
+  const [pwd, setPwd] = useState("");
+  const [error, setError] = useState(false);
+
+  const handleDocClick = (doc: typeof docs[0], e: React.MouseEvent) => {
+    if (!doc.locked || unlocked) return; // allow default navigation
+    e.preventDefault();
+    setShowPrompt(doc.file);
+    setPwd("");
+    setError(false);
+  };
+
+  const handleUnlock = () => {
+    if (pwd === DOCS_PASSWORD) {
+      setUnlocked(true);
+      sessionStorage.setItem("jarvis_docs_unlocked", "true");
+      setShowPrompt(null);
+      setPwd("");
+      setError(false);
+    } else {
+      setError(true);
+    }
+  };
 
   return (
     <Section id="docs">
@@ -673,17 +698,24 @@ function Documentation() {
         <div className="space-y-3">
           {docs.map((doc, i) => (
             <motion.a key={doc.file} href={`/docs/${doc.file}`} download={doc.file} target="_blank" rel="noopener noreferrer"
+              onClick={(e) => handleDocClick(doc, e)}
               initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.2 + i * 0.08, ease }}
               className="group relative flex items-center justify-between rounded-xl border border-border bg-card/20 backdrop-blur-sm p-5 hover:border-jarvis-cyan/25 transition-all duration-500 overflow-hidden"
             >
               <div className="absolute inset-0 rounded-xl bg-jarvis-cyan/[0.015] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
               <div className="relative z-10 flex items-center gap-4">
-                <svg className="w-5 h-5 text-jarvis-cyan flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                </svg>
+                {doc.locked && !unlocked ? (
+                  <svg className="w-5 h-5 text-jarvis-purple flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+                  </svg>
+                ) : (
+                  <svg className="w-5 h-5 text-jarvis-cyan flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                  </svg>
+                )}
                 <div>
                   <p className="font-display font-medium text-sm text-foreground">{doc.name}</p>
-                  <p className="text-[11px] text-muted-foreground">{doc.desc}</p>
+                  <p className="text-[11px] text-muted-foreground">{doc.desc}{doc.locked && !unlocked ? " · 🔒 Protected" : ""}</p>
                 </div>
               </div>
               <svg className="w-4 h-4 text-muted-foreground group-hover:text-jarvis-cyan transition-colors relative z-10 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
@@ -693,6 +725,55 @@ function Documentation() {
           ))}
         </div>
       </div>
+
+      {/* Password prompt modal */}
+      <AnimatePresence>
+        {showPrompt && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-50 flex items-center justify-center bg-background/80 backdrop-blur-xl"
+            onClick={() => setShowPrompt(null)}
+          >
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              onClick={(e) => e.stopPropagation()}
+              className="glass-card glow-border p-8 max-w-sm w-full mx-4 text-center"
+            >
+              <svg className="w-10 h-10 text-jarvis-purple mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+              </svg>
+              <h3 className="font-display font-bold text-lg text-foreground mb-1">Protected Document</h3>
+              <p className="text-[12px] text-muted-foreground mb-6">Enter the access code to download this file.</p>
+              <input
+                type="password"
+                value={pwd}
+                onChange={(e) => { setPwd(e.target.value); setError(false); }}
+                onKeyDown={(e) => e.key === "Enter" && handleUnlock()}
+                placeholder="Access code"
+                autoFocus
+                className={`w-full bg-background border rounded-lg px-4 py-3 text-sm text-foreground focus:outline-none transition-colors mb-3 ${
+                  error ? "border-red-500/60 focus:border-red-500" : "border-border/50 focus:border-jarvis-cyan/50"
+                }`}
+              />
+              {error && <p className="text-[11px] text-red-400 mb-3">Incorrect password. Try again.</p>}
+              <div className="flex gap-3">
+                <button onClick={() => setShowPrompt(null)}
+                  className="flex-1 py-2.5 border border-border/50 text-muted-foreground rounded-lg hover:border-border transition-all duration-300 text-sm">
+                  Cancel
+                </button>
+                <button onClick={handleUnlock}
+                  className="flex-1 py-2.5 bg-jarvis-cyan/20 border border-jarvis-cyan/40 text-jarvis-cyan font-semibold rounded-lg hover:bg-jarvis-cyan/30 transition-all duration-300 text-sm">
+                  Unlock
+                </button>
+              </div>
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </Section>
   );
 }
