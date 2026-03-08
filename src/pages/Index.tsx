@@ -21,7 +21,7 @@ const EXHIBITION_VENUE = "St. Anthony's School";
 const circuitSymbols = ["⊕", "◈", "◇", "△", "□", "○", "⬡", "⊡", "⊞", "⊠"];
 
 function FloatingParticles() {
-  const particles = Array.from({ length: 24 }, (_, i) => ({
+  const particles = Array.from({ length: 12 }, (_, i) => ({
     id: i,
     x: Math.random() * 100,
     y: Math.random() * 100,
