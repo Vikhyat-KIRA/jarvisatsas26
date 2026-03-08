@@ -114,7 +114,10 @@ function Hero() {
           <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, delay: 0.15, ease }} className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight mb-6">
             <span className="glow-text bg-gradient-to-r from-jarvis-cyan via-jarvis-blue to-jarvis-cyan bg-clip-text text-transparent">JARVIS</span>
           </motion.h1>
-          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.35, ease }} className="text-[15px] sm:text-base text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-[1.8]">
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.35, ease }} className="font-display italic text-lg sm:text-xl md:text-2xl text-foreground/80 max-w-xl mx-auto lg:mx-0 leading-[1.6] mb-2">
+            Not Just a Robot. An Android.
+          </motion.p>
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.45, ease }} className="text-[15px] sm:text-base text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-[1.8]">
             A 4-foot, 4-board edge-computing humanoid android. Bio-inspired but engineered.
           </motion.p>
           <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground/50 mt-4">
