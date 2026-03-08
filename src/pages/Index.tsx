@@ -1083,24 +1083,48 @@ function QRSection() {
 
 /* ─── Boot Sequence ─── */
 const bootLines = [
-  { text: "INITIALIZING JARVIS...", delay: 0 },
-  { text: "LOADING NEURAL PATHWAYS...", delay: 600 },
-  { text: "CALIBRATING SENSORS...", delay: 1200 },
-  { text: "ESTABLISHING COMMS...", delay: 1800 },
-  { text: "BOOTING SYSTEM...", delay: 2400 },
-  { text: "ACCESS GRANTED", delay: 3200, highlight: true },
+  { text: "STARK INDUSTRIES OS v4.7.1", delay: 0, type: "system" },
+  { text: "INITIALIZING JARVIS PROTOCOL...", delay: 400, type: "init" },
+  { text: "ARC REACTOR \u2014 ONLINE", delay: 800, type: "status" },
+  { text: "REPULSOR CALIBRATION \u2014 97.3%", delay: 1100, type: "status" },
+  { text: "NEURAL LINK ESTABLISHED", delay: 1400, type: "status" },
+  { text: "HUD OVERLAY \u2014 ACTIVE", delay: 1650, type: "status" },
+  { text: "THREAT ANALYSIS MODULE \u2014 LOADED", delay: 1900, type: "status" },
+  { text: "FLIGHT SYSTEMS \u2014 STANDBY", delay: 2100, type: "status" },
+  { text: "VOICE RECOGNITION \u2014 LOCKED", delay: 2300, type: "status" },
+  { text: "ALL SYSTEMS NOMINAL", delay: 2700, type: "success" },
+  { text: "WELCOME BACK, SIR.", delay: 3200, type: "final" },
 ];
+
+const hexBlocks = Array.from({ length: 30 }, (_, i) => ({
+  id: i,
+  x: Math.random() * 100,
+  y: Math.random() * 100,
+  size: Math.random() * 60 + 20,
+  delay: Math.random() * 2,
+  rotation: Math.random() * 360,
+}));
+
+const dataStreams = Array.from({ length: 8 }, (_, i) => ({
+  id: i,
+  left: 5 + (i * 12),
+  chars: Array.from({ length: 20 }, () => Math.random() > 0.5 ? "1" : "0").join(" "),
+}));
 
 function BootSequence({ onComplete }: { onComplete: () => void }) {
   const [visibleLines, setVisibleLines] = useState<number>(0);
   const [done, setDone] = useState(false);
+  const [power, setPower] = useState(0);
 
   useEffect(() => {
     const timers = bootLines.map((line, i) =>
-      setTimeout(() => setVisibleLines(i + 1), line.delay)
+      setTimeout(() => {
+        setVisibleLines(i + 1);
+        setPower(Math.min(100, ((i + 1) / bootLines.length) * 100));
+      }, line.delay)
     );
-    const endTimer = setTimeout(() => setDone(true), 4000);
-    const exitTimer = setTimeout(onComplete, 4800);
+    const endTimer = setTimeout(() => setDone(true), 4200);
+    const exitTimer = setTimeout(onComplete, 5000);
     return () => {
       timers.forEach(clearTimeout);
       clearTimeout(endTimer);
@@ -1110,66 +1134,206 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
 
   return (
     <motion.div
-      className="fixed inset-0 z-[9999] bg-background flex items-center justify-center"
-      animate={done ? { opacity: 0 } : { opacity: 1 }}
+      className="fixed inset-0 z-[9999] bg-background flex items-center justify-center overflow-hidden"
+      animate={done ? { opacity: 0, scale: 1.05 } : { opacity: 1, scale: 1 }}
       transition={{ duration: 0.8, ease }}
     >
-      {/* Scanline effect */}
-      <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <motion.div
-          className="absolute left-0 right-0 h-px bg-jarvis-cyan/20"
-          animate={{ top: ["-5%", "105%"] }}
-          transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
-        />
-      </div>
-
-      {/* Grid background */}
-      <div className="absolute inset-0 opacity-[0.03]" style={{
+      {/* Animated grid */}
+      <div className="absolute inset-0 opacity-[0.04]" style={{
         backgroundImage: "linear-gradient(hsl(var(--jarvis-cyan)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--jarvis-cyan)) 1px, transparent 1px)",
-        backgroundSize: "40px 40px",
+        backgroundSize: "30px 30px",
       }} />
 
-      <div className="relative font-mono text-sm sm:text-base space-y-3 px-8 max-w-lg w-full">
-        {bootLines.slice(0, visibleLines).map((line, i) => (
+      {/* Hex decorations */}
+      {hexBlocks.map((h) => (
+        <motion.div
+          key={h.id}
+          className="absolute border border-jarvis-cyan/[0.06] rounded-sm pointer-events-none"
+          style={{ left: `${h.x}%`, top: `${h.y}%`, width: h.size, height: h.size, rotate: `${h.rotation}deg` }}
+          initial={{ opacity: 0, scale: 0 }}
+          animate={{ opacity: [0, 0.15, 0.05], scale: [0.5, 1, 0.8] }}
+          transition={{ duration: 3, delay: h.delay, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
+
+      {/* Scanlines */}
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={`scan-${i}`}
+          className="absolute left-0 right-0 h-px bg-jarvis-cyan/15 pointer-events-none"
+          animate={{ top: ["-2%", "102%"] }}
+          transition={{ duration: 3 + i, delay: i * 0.8, repeat: Infinity, ease: "linear" }}
+        />
+      ))}
+
+      {/* Binary data streams */}
+      {dataStreams.map((s) => (
+        <motion.div
+          key={`stream-${s.id}`}
+          className="absolute top-0 bottom-0 font-mono text-[8px] text-jarvis-cyan/[0.08] tracking-[0.5em] writing-vertical pointer-events-none select-none"
+          style={{ left: `${s.left}%`, writingMode: "vertical-rl" }}
+          animate={{ y: ["-100%", "100%"] }}
+          transition={{ duration: 8 + s.id, repeat: Infinity, ease: "linear" }}
+        >
+          {s.chars}
+        </motion.div>
+      ))}
+
+      {/* Center arc reactor glow */}
+      <motion.div
+        className="absolute rounded-full pointer-events-none"
+        style={{ width: 300, height: 300 }}
+        initial={{ opacity: 0 }}
+        animate={{
+          opacity: [0, 0.08, 0.04, 0.08, 0.04],
+          scale: [0.8, 1.2, 1, 1.1, 1],
+        }}
+        transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+      >
+        <div className="w-full h-full rounded-full bg-jarvis-cyan/10 blur-[80px]" />
+      </motion.div>
+
+      {/* Rotating outer ring */}
+      <motion.div
+        className="absolute w-[500px] h-[500px] sm:w-[600px] sm:h-[600px] rounded-full border border-jarvis-cyan/[0.06] pointer-events-none"
+        animate={{ rotate: 360 }}
+        transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+      >
+        {[0, 90, 180, 270].map((deg) => (
+          <div key={deg} className="absolute w-2 h-2 bg-jarvis-cyan/20 rounded-full" style={{
+            top: "50%", left: "50%",
+            transform: `rotate(${deg}deg) translateY(-50%) translateX(-50%)`,
+            transformOrigin: `0 ${250}px`,
+          }} />
+        ))}
+      </motion.div>
+
+      {/* Inner ring */}
+      <motion.div
+        className="absolute w-[350px] h-[350px] sm:w-[420px] sm:h-[420px] rounded-full border border-dashed border-jarvis-cyan/[0.04] pointer-events-none"
+        animate={{ rotate: -360 }}
+        transition={{ duration: 30, repeat: Infinity, ease: "linear" }}
+      />
+
+      {/* Main content panel */}
+      <div className="relative z-10 w-full max-w-2xl px-6 sm:px-10">
+        {/* Header */}
+        <motion.div
+          className="flex items-center justify-between mb-8"
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <div className="flex items-center gap-3">
+            <motion.div
+              className="w-3 h-3 rounded-full bg-jarvis-cyan glow-dot"
+              animate={{ scale: [1, 1.3, 1], opacity: [0.7, 1, 0.7] }}
+              transition={{ duration: 1.5, repeat: Infinity }}
+            />
+            <span className="font-mono text-[10px] tracking-[0.4em] text-jarvis-cyan/60 uppercase">J.A.R.V.I.S</span>
+          </div>
+          <span className="font-mono text-[9px] text-muted-foreground/40 tracking-wider">STARK INDUSTRIES</span>
+        </motion.div>
+
+        {/* Terminal lines */}
+        <div className="space-y-1.5 font-mono text-[11px] sm:text-xs mb-6">
+          {bootLines.slice(0, visibleLines).map((line, i) => (
+            <motion.div
+              key={i}
+              initial={{ opacity: 0, x: -30, filter: "blur(4px)" }}
+              animate={{ opacity: 1, x: 0, filter: "blur(0px)" }}
+              transition={{ duration: 0.25 }}
+              className={`flex items-center gap-2.5 ${
+                line.type === "final"
+                  ? "text-jarvis-cyan font-bold text-sm sm:text-base tracking-[0.25em] mt-4"
+                  : line.type === "success"
+                  ? "text-green-400/80"
+                  : line.type === "system"
+                  ? "text-jarvis-blue/60"
+                  : line.type === "init"
+                  ? "text-jarvis-cyan/70"
+                  : "text-muted-foreground/60"
+              }`}
+            >
+              <span className={`flex-shrink-0 ${
+                line.type === "final" ? "text-jarvis-cyan" :
+                line.type === "success" ? "text-green-400/60" :
+                line.type === "system" ? "text-jarvis-blue/40" :
+                "text-muted-foreground/30"
+              }`}>
+                {line.type === "final" ? "\u25C6" : line.type === "success" ? "\u2713" : line.type === "system" ? "\u25B8" : "\u2502"}
+              </span>
+              {line.text}
+              {i === visibleLines - 1 && line.type !== "final" && (
+                <motion.span
+                  className="inline-block w-1.5 h-3 bg-jarvis-cyan/60 ml-0.5"
+                  animate={{ opacity: [1, 0] }}
+                  transition={{ duration: 0.4, repeat: Infinity }}
+                />
+              )}
+            </motion.div>
+          ))}
+        </div>
+
+        {/* Power gauge */}
+        <motion.div
+          className="space-y-2"
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.3 }}
+        >
+          <div className="flex justify-between font-mono text-[9px] text-muted-foreground/40 tracking-wider">
+            <span>POWER OUTPUT</span>
+            <span>{Math.round(power)}%</span>
+          </div>
+          <div className="h-1 bg-border/20 rounded-full overflow-hidden">
+            <motion.div
+              className="h-full rounded-full"
+              style={{
+                background: "linear-gradient(90deg, hsl(var(--jarvis-cyan) / 0.4), hsl(var(--jarvis-blue) / 0.6), hsl(var(--jarvis-cyan) / 0.8))",
+              }}
+              initial={{ width: "0%" }}
+              animate={{ width: `${power}%` }}
+              transition={{ duration: 0.4, ease }}
+            />
+          </div>
+
+          {/* Status indicators */}
+          <div className="flex gap-6 mt-4">
+            {["ARC", "HUD", "COMM", "NAV"].map((label, i) => (
+              <motion.div
+                key={label}
+                className="flex items-center gap-1.5"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: power > (i + 1) * 20 ? 1 : 0.2 }}
+                transition={{ duration: 0.3 }}
+              >
+                <div className={`w-1 h-1 rounded-full ${power > (i + 1) * 20 ? "bg-jarvis-cyan glow-dot" : "bg-muted-foreground/20"}`} />
+                <span className="font-mono text-[8px] tracking-[0.3em] text-muted-foreground/50">{label}</span>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Corner HUD decorations */}
+        {[
+          "top-0 left-0 border-t border-l",
+          "top-0 right-0 border-t border-r",
+          "bottom-0 left-0 border-b border-l",
+          "bottom-0 right-0 border-b border-r",
+        ].map((pos, i) => (
           <motion.div
             key={i}
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.3 }}
-            className={`flex items-center gap-3 ${
-              line.highlight
-                ? "text-jarvis-cyan font-bold text-lg sm:text-xl tracking-[0.3em]"
-                : "text-muted-foreground"
-            }`}
-          >
-            <span className={`inline-block w-1.5 h-1.5 rounded-full flex-shrink-0 ${
-              line.highlight ? "bg-jarvis-cyan glow-dot" : "bg-muted-foreground/50"
-            }`} />
-            {line.text}
-            {i === visibleLines - 1 && !line.highlight && (
-              <motion.span
-                className="inline-block w-2 h-4 bg-jarvis-cyan/70 ml-1"
-                animate={{ opacity: [1, 0] }}
-                transition={{ duration: 0.5, repeat: Infinity }}
-              />
-            )}
-          </motion.div>
-        ))}
-
-        {/* Progress bar */}
-        <div className="mt-6 h-px bg-border/30 rounded-full overflow-hidden">
-          <motion.div
-            className="h-full bg-gradient-to-r from-jarvis-cyan/60 to-jarvis-blue/60"
-            initial={{ width: "0%" }}
-            animate={{ width: done ? "100%" : `${(visibleLines / bootLines.length) * 90}%` }}
-            transition={{ duration: 0.5, ease }}
+            className={`absolute ${pos} w-6 h-6 border-jarvis-cyan/10 pointer-events-none`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: [0, 0.5, 0.3] }}
+            transition={{ delay: 0.5 + i * 0.15, duration: 1 }}
           />
-        </div>
+        ))}
       </div>
     </motion.div>
   );
 }
-
 /* ─── Main Page ─── */
 const Index = () => {
   const [booted, setBooted] = useState(false);
