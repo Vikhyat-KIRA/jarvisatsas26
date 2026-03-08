@@ -111,7 +111,7 @@
     transition: background-color 0.6s ease, color 0.6s ease;
   }
 
-  * {
+  .glass-card, nav, footer, section, header {
     transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
   }
 
