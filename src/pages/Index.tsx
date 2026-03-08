@@ -425,19 +425,27 @@ const Index = () => {
           </div>
           <div className="sr space-y-4">
             {[
-              "The JARVIS Manifesto — Engineering philosophy & system design",
-              "The JARVIS Compendium — Complete reference encyclopedia",
-              "Fabrication Guide — Physical build manual",
-              "Print Manual — Step-by-step build, wiring & code",
-              "The Complete Archive — Master 131-page reference",
+              { name: "The JARVIS Manifesto", desc: "Engineering philosophy & system design", file: "THE_JARVIS_MANIFESTO.docx" },
+              { name: "The JARVIS Compendium", desc: "Complete reference encyclopedia", file: "THE_JARVIS_COMPENDIUM.docx" },
+              { name: "Fabrication Guide", desc: "Physical build manual", file: "JARVIS_FABRICATION_GUIDE.docx" },
+              { name: "Print Manual", desc: "Step-by-step build, wiring & code", file: "JARVIS_PRINT_MANUAL.docx" },
+              { name: "The Complete Archive", desc: "Master 131-page reference", file: "THE_COMPLETE_ARCHIVE.docx" },
             ].map((doc) => (
-              <div key={doc} className="glass-panel glow-border p-5 flex items-center justify-between hover:border-primary/30 transition-all">
+              <a
+                key={doc.file}
+                href={`/docs/${doc.file}`}
+                download
+                className="glass-panel glow-border p-5 flex items-center justify-between hover:border-primary/30 transition-all group block"
+              >
                 <div className="flex items-center gap-4">
                   <FileText className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-sm font-medium">{doc}</span>
+                  <div>
+                    <span className="text-sm font-medium">{doc.name}</span>
+                    <p className="text-xs text-muted-foreground">{doc.desc}</p>
+                  </div>
                 </div>
-                <span className="text-xs text-muted-foreground italic whitespace-nowrap ml-4">Content will be added</span>
-              </div>
+                <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 ml-4" />
+              </a>
             ))}
           </div>
         </div>
