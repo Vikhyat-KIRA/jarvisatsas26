@@ -1123,8 +1123,8 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
         setPower(Math.min(100, ((i + 1) / bootLines.length) * 100));
       }, line.delay)
     );
-    const endTimer = setTimeout(() => setDone(true), 4200);
-    const exitTimer = setTimeout(onComplete, 5000);
+    const endTimer = setTimeout(() => setDone(true), 9200);
+    const exitTimer = setTimeout(onComplete, 10000);
     return () => {
       timers.forEach(clearTimeout);
       clearTimeout(endTimer);
