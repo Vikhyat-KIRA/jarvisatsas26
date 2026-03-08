@@ -434,7 +434,9 @@ const Index = () => {
               <a
                 key={doc.file}
                 href={`/docs/${doc.file}`}
-                download
+                download={doc.file}
+                target="_blank"
+                rel="noopener noreferrer"
                 className="glass-panel glow-border p-5 flex items-center justify-between hover:border-primary/30 transition-all group block"
               >
                 <div className="flex items-center gap-4">
