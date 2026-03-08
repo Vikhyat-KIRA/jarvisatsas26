@@ -8,6 +8,7 @@ import boardRaspi from "@/assets/board-raspi.png";
 import boardArduino from "@/assets/board-arduino.png";
 import boardUno from "@/assets/board-uno.png";
 import boardPico from "@/assets/board-pico.png";
+import qrCodeImage from "@/assets/qr-code.png";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
