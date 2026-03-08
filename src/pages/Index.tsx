@@ -166,6 +166,7 @@ function Nav() {
             {navLinks.map((l) => (
               <button key={l.href} onClick={() => go(l.href)} className="text-[11px] tracking-[0.2em] uppercase text-muted-foreground hover:text-jarvis-cyan transition-colors duration-300">{l.label}</button>
             ))}
+            <ArcReactorToggle />
           </div>
           <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden w-8 h-8 flex flex-col items-center justify-center gap-1.5">
             <span className={`block w-5 h-px bg-foreground transition-all duration-300 ${mobileOpen ? "rotate-45 translate-y-[3.5px]" : ""}`} />
