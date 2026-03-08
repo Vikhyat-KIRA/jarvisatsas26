@@ -455,7 +455,7 @@ const subsystems = [
       { key: "Power", val: "~50mA Ultra-Low" },
     ],
     desc: "The Bouncer runs an ultra-low-power detection loop, waking the entire system when a human enters the 1-meter perimeter zone.",
-    img: jarvisShowcase,
+    img: boardUno,
   },
   {
     id: "leds",
