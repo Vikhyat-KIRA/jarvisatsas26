@@ -1093,7 +1093,8 @@ const bootLines = [
   { text: "FLIGHT SYSTEMS \u2014 STANDBY", delay: 5800, type: "status" },
   { text: "VOICE RECOGNITION \u2014 LOCKED", delay: 6500, type: "status" },
   { text: "ALL SYSTEMS NOMINAL", delay: 7500, type: "success" },
-  { text: "WELCOME BACK, SIR.", delay: 8500, type: "final" },
+  { text: "ACCESS GRANTED", delay: 8200, type: "access" },
+  { text: "WELCOME BACK, SIR.", delay: 9200, type: "final" },
 ];
 
 const hexBlocks = Array.from({ length: 30 }, (_, i) => ({
@@ -1246,6 +1247,8 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
               className={`flex items-center gap-2.5 ${
                 line.type === "final"
                   ? "text-jarvis-cyan font-bold text-sm sm:text-base tracking-[0.25em] mt-4"
+                  : line.type === "access"
+                  ? "text-jarvis-cyan font-bold text-base sm:text-lg tracking-[0.35em] mt-6"
                   : line.type === "success"
                   ? "text-green-400/80"
                   : line.type === "system"
@@ -1257,14 +1260,18 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
             >
               <span className={`flex-shrink-0 ${
                 line.type === "final" ? "text-jarvis-cyan" :
+                line.type === "access" ? "text-jarvis-cyan" :
                 line.type === "success" ? "text-green-400/60" :
                 line.type === "system" ? "text-jarvis-blue/40" :
                 "text-muted-foreground/30"
               }`}>
-                {line.type === "final" ? "\u25C6" : line.type === "success" ? "\u2713" : line.type === "system" ? "\u25B8" : "\u2502"}
+                {line.type === "access" ? "\u25C8" : line.type === "final" ? "\u25C6" : line.type === "success" ? "\u2713" : line.type === "system" ? "\u25B8" : "\u2502"}
               </span>
-              <span className={line.type === "final" ? "glitch-text glow-text" : ""}>{line.text}</span>
-              {i === visibleLines - 1 && line.type !== "final" && (
+              <span className={
+                line.type === "access" ? "glitch-access glow-text" :
+                line.type === "final" ? "glitch-text glow-text" : ""
+              }>{line.text}</span>
+              {i === visibleLines - 1 && line.type !== "final" && line.type !== "access" && (
                 <motion.span
                   className="inline-block w-1.5 h-3 bg-jarvis-cyan/60 ml-0.5"
                   animate={{ opacity: [1, 0] }}
