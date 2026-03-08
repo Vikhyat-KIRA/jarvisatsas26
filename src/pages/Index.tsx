@@ -441,7 +441,7 @@ const subsystems = [
       { key: "Safety", val: "30cm Kill Zone" },
     ],
     desc: "The Muscle handles real-time motor control with a hardware safety override — if an obstacle is within 30cm, it ignores AI commands entirely.",
-    img: jarvisHero,
+    img: boardArduino,
   },
   {
     id: "sensors",
