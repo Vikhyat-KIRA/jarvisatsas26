@@ -399,7 +399,7 @@ function WiringDiagram() {
             <div className="rounded-xl border border-destructive/20 p-6 bg-destructive/[0.03]">
               <h4 className="font-display font-bold text-destructive text-xs tracking-wider mb-4">DIRTY POWER · 12V</h4>
               <div className="space-y-2">
-                {["12V Li-ion Battery — lowest chassis point", "1000μF Capacitor — brownout absorption", "L298N Motor Driver — VIN 5–35V", "2× BO Motors — drive wheels"].map((t) => (
+                {["12V Li-ion Battery \u2014 lowest chassis point", "2200\u03BCF Capacitor \u2014 brownout absorption", "L298N Motor Driver \u2014 VIN 5\u201335V", "2\u00D7 BO Motors \u2014 drive wheels"].map((t) => (
                   <div key={t} className="rounded-lg bg-background/50 border border-border px-3 py-2">
                     <p className="text-[11px] text-muted-foreground">{t}</p>
                   </div>
