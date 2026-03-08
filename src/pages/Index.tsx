@@ -1097,7 +1097,7 @@ const bootLines = [
   { text: "WELCOME BACK, SIR.", delay: 9200, type: "final" },
 ];
 
-const hexBlocks = Array.from({ length: 30 }, (_, i) => ({
+const hexBlocks = Array.from({ length: 15 }, (_, i) => ({
   id: i,
   x: Math.random() * 100,
   y: Math.random() * 100,
