@@ -1106,7 +1106,7 @@ const hexBlocks = Array.from({ length: 15 }, (_, i) => ({
   rotation: Math.random() * 360,
 }));
 
-const dataStreams = Array.from({ length: 8 }, (_, i) => ({
+const dataStreams = Array.from({ length: 4 }, (_, i) => ({
   id: i,
   left: 5 + (i * 12),
   chars: Array.from({ length: 20 }, () => Math.random() > 0.5 ? "1" : "0").join(" "),
