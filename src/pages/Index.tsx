@@ -762,7 +762,7 @@ function Footer() {
 function Countdown() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
-  const target = new Date("2025-09-16T09:00:00").getTime();
+  const target = new Date(EXHIBITION_DATE).getTime();
 
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
@@ -790,11 +790,14 @@ function Countdown() {
         <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5">
           Exhibition Day
         </motion.p>
-        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-4">
-          September 16th, 2025
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-2">
+          {EXHIBITION_TITLE}
         </motion.h2>
+        <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.2 }} className="font-display italic text-lg text-foreground/60 mb-2">
+          the moment everything comes alive
+        </motion.p>
         <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.25 }} className="text-muted-foreground text-[15px] mb-12">
-          St. Anthony's School · JARVIS goes live.
+          {EXHIBITION_VENUE} · JARVIS goes live.
         </motion.p>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.3 }} className="flex justify-center gap-4 sm:gap-6">
