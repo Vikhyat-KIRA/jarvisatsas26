@@ -651,8 +651,15 @@ function Team() {
 
         {/* Lead */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.25, ease }} className="text-center mb-12">
-          <p className="text-[9px] tracking-[0.5em] uppercase text-muted-foreground/50 mb-3">Lead Architect</p>
-          <p className="font-display font-bold text-xl text-foreground tracking-wide">Vikhyat Gupta</p>
+          <p className="text-[9px] tracking-[0.5em] uppercase text-muted-foreground/50 mb-4">Lead Architect</p>
+          <p className="font-display font-bold text-3xl sm:text-4xl md:text-5xl bg-gradient-to-r from-jarvis-cyan via-jarvis-blue to-jarvis-purple bg-clip-text text-transparent tracking-wide glow-text">
+            Vikhyat Gupta
+          </p>
+          <div className="mt-3 flex items-center justify-center gap-3">
+            <div className="h-px w-12 bg-gradient-to-r from-transparent to-jarvis-cyan/40" />
+            <div className="w-2 h-2 rounded-full bg-jarvis-cyan glow-dot" />
+            <div className="h-px w-12 bg-gradient-to-l from-transparent to-jarvis-cyan/40" />
+          </div>
         </motion.div>
 
         {/* Fabrication */}
