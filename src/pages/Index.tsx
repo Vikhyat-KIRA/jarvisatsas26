@@ -427,7 +427,7 @@ const subsystems = [
       { key: "Audio", val: "STT/TTS Pipeline" },
     ],
     desc: "The Master node runs Linux, handling all AI inference, computer vision, speech processing, and high-level decision making in real time.",
-    img: jarvisCloseup,
+    img: boardRaspi,
   },
   {
     id: "motor",
