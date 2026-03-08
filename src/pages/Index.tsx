@@ -1084,16 +1084,16 @@ function QRSection() {
 /* ─── Boot Sequence ─── */
 const bootLines = [
   { text: "STARK INDUSTRIES OS v4.7.1", delay: 0, type: "system" },
-  { text: "INITIALIZING JARVIS PROTOCOL...", delay: 400, type: "init" },
-  { text: "ARC REACTOR \u2014 ONLINE", delay: 800, type: "status" },
-  { text: "REPULSOR CALIBRATION \u2014 97.3%", delay: 1100, type: "status" },
-  { text: "NEURAL LINK ESTABLISHED", delay: 1400, type: "status" },
-  { text: "HUD OVERLAY \u2014 ACTIVE", delay: 1650, type: "status" },
-  { text: "THREAT ANALYSIS MODULE \u2014 LOADED", delay: 1900, type: "status" },
-  { text: "FLIGHT SYSTEMS \u2014 STANDBY", delay: 2100, type: "status" },
-  { text: "VOICE RECOGNITION \u2014 LOCKED", delay: 2300, type: "status" },
-  { text: "ALL SYSTEMS NOMINAL", delay: 2700, type: "success" },
-  { text: "WELCOME BACK, SIR.", delay: 3200, type: "final" },
+  { text: "INITIALIZING JARVIS PROTOCOL...", delay: 800, type: "init" },
+  { text: "ARC REACTOR \u2014 ONLINE", delay: 1800, type: "status" },
+  { text: "REPULSOR CALIBRATION \u2014 97.3%", delay: 2600, type: "status" },
+  { text: "NEURAL LINK ESTABLISHED", delay: 3400, type: "status" },
+  { text: "HUD OVERLAY \u2014 ACTIVE", delay: 4200, type: "status" },
+  { text: "THREAT ANALYSIS MODULE \u2014 LOADED", delay: 5000, type: "status" },
+  { text: "FLIGHT SYSTEMS \u2014 STANDBY", delay: 5800, type: "status" },
+  { text: "VOICE RECOGNITION \u2014 LOCKED", delay: 6500, type: "status" },
+  { text: "ALL SYSTEMS NOMINAL", delay: 7500, type: "success" },
+  { text: "WELCOME BACK, SIR.", delay: 8500, type: "final" },
 ];
 
 const hexBlocks = Array.from({ length: 30 }, (_, i) => ({
@@ -1123,8 +1123,8 @@ function BootSequence({ onComplete }: { onComplete: () => void }) {
         setPower(Math.min(100, ((i + 1) / bootLines.length) * 100));
       }, line.delay)
     );
-    const endTimer = setTimeout(() => setDone(true), 4200);
-    const exitTimer = setTimeout(onComplete, 5000);
+    const endTimer = setTimeout(() => setDone(true), 9200);
+    const exitTimer = setTimeout(onComplete, 10000);
     return () => {
       timers.forEach(clearTimeout);
       clearTimeout(endTimer);
