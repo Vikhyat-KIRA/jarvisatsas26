@@ -1093,7 +1093,8 @@ const bootLines = [
   { text: "FLIGHT SYSTEMS \u2014 STANDBY", delay: 5800, type: "status" },
   { text: "VOICE RECOGNITION \u2014 LOCKED", delay: 6500, type: "status" },
   { text: "ALL SYSTEMS NOMINAL", delay: 7500, type: "success" },
-  { text: "WELCOME BACK, SIR.", delay: 8500, type: "final" },
+  { text: "ACCESS GRANTED", delay: 8200, type: "access" },
+  { text: "WELCOME BACK, SIR.", delay: 9200, type: "final" },
 ];
 
 const hexBlocks = Array.from({ length: 30 }, (_, i) => ({
