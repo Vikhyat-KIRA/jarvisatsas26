@@ -305,7 +305,7 @@ function Architecture() {
           Multi-Core Brain
         </motion.p>
         <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide">
-          4-Board Architecture
+          4-Board <span className="italic text-jarvis-cyan">Architecture</span>
         </motion.h2>
         <motion.p initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.25 }} className="mt-6 text-muted-foreground text-[15px] max-w-2xl leading-[1.8]">
           Tasks are distributed across four dedicated logic boards via a centralized USB bus using star topology. No single chip is bottlenecked.
