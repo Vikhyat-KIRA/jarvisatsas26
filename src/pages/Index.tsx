@@ -145,6 +145,9 @@ function Hero() {
 
   return (
     <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Floating circuit particles */}
+      <FloatingParticles />
+
       {/* Grid background */}
       <div className="absolute inset-0 opacity-[0.035]" style={{
         backgroundImage: "linear-gradient(rgba(0,229,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.4) 1px, transparent 1px)",
