@@ -1,4 +1,5 @@
-import { useEffect, useRef } from "react";
+import { useRef, useState, useEffect } from "react";
+import { motion, useScroll, useTransform, useInView, AnimatePresence } from "framer-motion";
 import jarvisHero from "@/assets/jarvis-hero.png";
 import jarvisShowcase from "@/assets/jarvis-showcase.png";
 import jarvisCloseup from "@/assets/jarvis-closeup.png";
@@ -7,494 +8,565 @@ import boardRaspi from "@/assets/board-raspi.png";
 import boardArduino from "@/assets/board-arduino.png";
 import boardUno from "@/assets/board-uno.png";
 import boardPico from "@/assets/board-pico.png";
-import { Cpu, CircuitBoard, Microchip, Zap, FileText, Users, Eye, Wrench, Image, Shield, Radio, Battery, Download, Cable } from "lucide-react";
 
-function useScrollReveal() {
-  const ref = useRef<HTMLDivElement>(null);
+const ease = [0.22, 1, 0.36, 1] as const;
+
+/* ─── Navigation ─── */
+const navLinks = [
+  { label: "Vision", href: "#vision" },
+  { label: "JARVIS", href: "#meet" },
+  { label: "Architecture", href: "#architecture" },
+  { label: "Wiring", href: "#wiring" },
+  { label: "Build", href: "#build" },
+  { label: "Docs", href: "#docs" },
+  { label: "Team", href: "#team" },
+];
+
+function Nav() {
+  const [scrolled, setScrolled] = useState(false);
+  const [mobileOpen, setMobileOpen] = useState(false);
+
   useEffect(() => {
-    const obs = new IntersectionObserver(
-      (entries) => entries.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("fade-in"); obs.unobserve(e.target); } }),
-      { threshold: 0.12 }
-    );
-    ref.current?.querySelectorAll(".sr").forEach((el) => obs.observe(el));
-    return () => obs.disconnect();
+    const onScroll = () => setScrolled(window.scrollY > 50);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
   }, []);
-  return ref;
-}
 
-const Index = () => {
-  const r = useScrollReveal();
+  useEffect(() => {
+    document.body.style.overflow = mobileOpen ? "hidden" : "";
+    return () => { document.body.style.overflow = ""; };
+  }, [mobileOpen]);
+
+  const go = (href: string) => {
+    setMobileOpen(false);
+    document.querySelector(href)?.scrollIntoView({ behavior: "smooth" });
+  };
 
   return (
-    <div ref={r} className="min-h-screen bg-background text-foreground overflow-x-hidden">
-      {/* Nav */}
-      <nav className="fixed top-0 left-0 right-0 z-50 glass-panel border-t-0 rounded-t-none border-x-0">
-        <div className="container mx-auto px-6 py-4 flex items-center justify-between">
-          <span className="font-display text-xl font-bold tracking-wider text-primary">JARVIS</span>
-          <div className="hidden md:flex items-center gap-8 text-sm text-muted-foreground">
-            {["Vision", "Architecture", "Build", "Gallery", "Team"].map((s) => (
-              <a key={s} href={`#${s.toLowerCase()}`} className="hover:text-primary transition-colors">{s}</a>
+    <>
+      <motion.nav
+        initial={{ y: -80 }}
+        animate={{ y: 0 }}
+        transition={{ duration: 0.8, ease }}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-700 ${
+          scrolled ? "bg-background/70 backdrop-blur-2xl border-b border-border/30 shadow-[0_4px_30px_rgba(0,0,0,0.5)]" : "bg-transparent"
+        }`}
+      >
+        <div className="max-w-7xl mx-auto px-6 lg:px-12 h-16 flex items-center justify-between">
+          <button onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })} className="font-display font-bold text-base tracking-[0.35em] text-foreground hover:text-jarvis-cyan transition-colors duration-300">
+            JARVIS
+          </button>
+          <div className="hidden md:flex items-center gap-10">
+            {navLinks.map((l) => (
+              <button key={l.href} onClick={() => go(l.href)} className="text-[11px] tracking-[0.2em] uppercase text-muted-foreground hover:text-jarvis-cyan transition-colors duration-300">{l.label}</button>
             ))}
           </div>
+          <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden w-8 h-8 flex flex-col items-center justify-center gap-1.5">
+            <span className={`block w-5 h-px bg-foreground transition-all duration-300 ${mobileOpen ? "rotate-45 translate-y-[3.5px]" : ""}`} />
+            <span className={`block w-5 h-px bg-foreground transition-all duration-300 ${mobileOpen ? "-rotate-45 -translate-y-[3.5px]" : ""}`} />
+          </button>
         </div>
-      </nav>
+      </motion.nav>
 
-      {/* Hero */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        <div className="absolute inset-0">
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] rounded-full bg-primary/10 blur-[120px]" />
-          <div className="absolute top-1/4 right-1/4 w-[300px] h-[300px] rounded-full bg-glow-muted/10 blur-[80px] animate-pulse-glow" />
+      <AnimatePresence>
+        {mobileOpen && (
+          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="fixed inset-0 z-40 bg-background/95 backdrop-blur-2xl flex flex-col items-center justify-center gap-8">
+            {navLinks.map((l, i) => (
+              <motion.button key={l.href} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.06, ease }} onClick={() => go(l.href)} className="text-sm tracking-[0.3em] uppercase text-muted-foreground hover:text-jarvis-cyan transition-colors">
+                {l.label}
+              </motion.button>
+            ))}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </>
+  );
+}
+
+/* ─── Hero ─── */
+function Hero() {
+  const ref = useRef<HTMLDivElement>(null);
+  const { scrollYProgress } = useScroll({ target: ref, offset: ["start start", "end start"] });
+  const y = useTransform(scrollYProgress, [0, 1], [0, 150]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.95]);
+
+  return (
+    <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Grid background */}
+      <div className="absolute inset-0 opacity-[0.035]" style={{
+        backgroundImage: "linear-gradient(rgba(0,229,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.4) 1px, transparent 1px)",
+        backgroundSize: "100px 100px",
+      }} />
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[1000px] h-[1000px] rounded-full bg-jarvis-cyan/[0.025] blur-[200px] pointer-events-none" />
+      <div className="absolute top-1/4 left-[20%] w-[400px] h-[400px] rounded-full bg-jarvis-purple/[0.03] blur-[150px] pointer-events-none" />
+
+      {/* Scan line */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <div className="absolute left-0 right-0 h-px bg-gradient-to-r from-transparent via-jarvis-cyan/20 to-transparent" style={{ animation: "scan-line 8s linear infinite" }} />
+      </div>
+
+      <motion.div style={{ y, opacity, scale }} className="relative z-10 max-w-7xl mx-auto px-6 lg:px-12 flex flex-col lg:flex-row items-center gap-12 pt-24">
+        <div className="flex-1 text-center lg:text-left">
+          <motion.p initial={{ opacity: 0, y: 15 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, ease }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-6">
+            Meet the star of the show
+          </motion.p>
+          <motion.h1 initial={{ opacity: 0, y: 40 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 1.2, delay: 0.15, ease }} className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl font-black tracking-tight mb-6">
+            <span className="glow-text bg-gradient-to-r from-jarvis-cyan via-jarvis-blue to-jarvis-cyan bg-clip-text text-transparent">JARVIS</span>
+          </motion.h1>
+          <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.35, ease }} className="text-[15px] sm:text-base text-muted-foreground max-w-xl mx-auto lg:mx-0 leading-[1.8]">
+            A 4-foot, 4-board edge-computing humanoid android. Bio-inspired but engineered.
+          </motion.p>
+          <motion.p initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.5 }} className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground/50 mt-4">
+            Architect Division · St. Anthony's School · Target: September 16th
+          </motion.p>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8, delay: 0.55, ease }} className="mt-10 flex gap-4 justify-center lg:justify-start">
+            <a href="#vision" className="px-8 py-3 bg-jarvis-cyan/10 border border-jarvis-cyan/30 text-jarvis-cyan font-semibold rounded-xl hover:bg-jarvis-cyan/20 transition-all duration-300">Explore</a>
+            <a href="#docs" className="px-8 py-3 border border-border text-foreground rounded-xl hover:border-jarvis-cyan/30 hover:text-jarvis-cyan transition-all duration-300">Documentation</a>
+          </motion.div>
         </div>
-        <div className="relative z-10 container mx-auto px-6 flex flex-col lg:flex-row items-center gap-12 pt-24">
-          <div className="flex-1 text-center lg:text-left">
-            <p className="text-sm uppercase tracking-[0.3em] text-muted-foreground mb-4 fade-in">Meet the star of the show</p>
-            <h1 className="font-display text-7xl md:text-8xl lg:text-9xl font-black tracking-tight mb-6 fade-in delay-100">
-              <span className="glow-text text-primary">JARVIS</span>
-            </h1>
-            <p className="text-lg md:text-xl text-muted-foreground max-w-xl mx-auto lg:mx-0 fade-in delay-200">
-              A 4-foot, 4-board edge-computing humanoid android. Bio-inspired but engineered.
-            </p>
-            <p className="text-sm text-muted-foreground/70 mt-3 fade-in delay-200">
-              Architect Division · St. Anthony's School · Target: September 16th
-            </p>
-            <div className="mt-10 flex gap-4 justify-center lg:justify-start fade-in delay-300">
-              <a href="#vision" className="px-8 py-3 bg-primary text-primary-foreground font-semibold rounded-lg hover:bg-primary/90 transition-colors">Explore</a>
-              <a href="#docs" className="px-8 py-3 border border-border text-foreground rounded-lg hover:border-primary/50 hover:text-primary transition-colors">Documentation</a>
+        <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 1.2, delay: 0.3, ease }} className="flex-1 flex justify-center">
+          <img src={jarvisHero} alt="JARVIS humanoid android" className="w-[350px] md:w-[450px] animate-float drop-shadow-[0_0_80px_rgba(0,229,255,0.2)]" />
+        </motion.div>
+      </motion.div>
+
+      <div className="absolute bottom-0 left-0 right-0 h-48 bg-gradient-to-t from-background to-transparent pointer-events-none" />
+    </section>
+  );
+}
+
+/* ─── Section wrapper with inView animation ─── */
+function Section({ id, children, className = "" }: { id?: string; children: React.ReactNode; className?: string }) {
+  return (
+    <section id={id} className={`relative py-28 sm:py-40 overflow-hidden ${className}`}>
+      {children}
+    </section>
+  );
+}
+
+/* ─── Vision ─── */
+function Vision() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-100px" });
+
+  return (
+    <Section id="vision">
+      <div className="absolute top-1/2 right-0 w-[500px] h-[500px] rounded-full bg-jarvis-blue/[0.025] blur-[180px] pointer-events-none -translate-y-1/2" />
+      <div ref={ref} className="max-w-3xl mx-auto px-6 lg:px-10">
+        <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, ease }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-10">
+          Engineering Philosophy
+        </motion.p>
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12, ease }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground leading-[1.2] tracking-wide">
+          Bio-Inspired.{" "}
+          <span className="bg-gradient-to-r from-jarvis-cyan via-jarvis-blue to-jarvis-cyan bg-clip-text text-transparent">Engineered.</span>
+        </motion.h2>
+        <motion.div initial={{ opacity: 0, y: 25 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.3, ease }} className="mt-10 space-y-6 text-muted-foreground text-[15px] leading-[1.9]">
+          <p>Most humanoid robots fail because they prioritize acrobatics over intelligence — wasting computational power trying to balance on two legs. JARVIS operates on a different philosophy: by utilizing a geometrically perfect mechanical base, we free up 100% of CPU power for true Artificial Intelligence, computer vision, and social interaction.</p>
+          <p>JARVIS is a generative, contextual android. He does not use pre-recorded lines. Powered by the Gemini AI API, OpenCV face tracking, and a multi-board distributed architecture, he sees, listens, thinks, and speaks in real time.</p>
+        </motion.div>
+      </div>
+    </Section>
+  );
+}
+
+/* ─── Meet JARVIS ─── */
+function MeetJarvis() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  const stats = [
+    { label: "Height", value: "4 feet" },
+    { label: "Compute", value: "4-board edge" },
+    { label: "Chassis", value: "6-point tripod" },
+    { label: "AI Engine", value: "Gemini API" },
+    { label: "Vision", value: "OpenCV" },
+    { label: "Frame", value: "Wood + Cardboard" },
+  ];
+
+  return (
+    <Section id="meet">
+      <div className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full bg-jarvis-purple/[0.02] blur-[200px] pointer-events-none" />
+      <div ref={ref} className="max-w-6xl mx-auto px-6 lg:px-10">
+        <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5">
+          The Robot
+        </motion.p>
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-14">
+          Meet JARVIS
+        </motion.h2>
+
+        <div className="grid lg:grid-cols-5 gap-8 items-start">
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={inView ? { opacity: 1, scale: 1 } : {}} transition={{ duration: 1, delay: 0.2, ease }} className="lg:col-span-2 flex justify-center">
+            <img src={jarvisShowcase} alt="JARVIS full body" className="w-full max-w-sm drop-shadow-[0_0_60px_rgba(0,229,255,0.15)]" />
+          </motion.div>
+
+          <div className="lg:col-span-3 space-y-5">
+            <motion.p initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.25, ease }} className="text-muted-foreground text-[15px] leading-[1.8]">
+              A 4-foot boxy humanoid android built from wood and reinforced cardboard. Designed to look bipedal while secretly running on a hyper-stable, zero-turn 6-point chassis with BO motor drive wheels and ball casters.
+            </motion.p>
+            <div className="grid grid-cols-2 sm:grid-cols-3 gap-3">
+              {stats.map((s, i) => (
+                <motion.div key={s.label} initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.3 + i * 0.08, ease }} className="glass-card glow-border p-4">
+                  <p className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground">{s.label}</p>
+                  <p className="text-sm font-semibold text-jarvis-cyan mt-1">{s.value}</p>
+                </motion.div>
+              ))}
             </div>
           </div>
-          <div className="flex-1 flex justify-center fade-in delay-200">
-            <img src={jarvisHero} alt="JARVIS — 4-foot humanoid android" className="w-[400px] md:w-[500px] animate-float drop-shadow-[0_0_60px_hsl(210_100%_60%/0.3)]" />
-          </div>
         </div>
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-2 text-muted-foreground">
-          <span className="text-xs tracking-widest uppercase">Scroll</span>
-          <div className="w-px h-8 bg-gradient-to-b from-muted-foreground to-transparent" />
-        </div>
-      </section>
+      </div>
+    </Section>
+  );
+}
 
-      {/* Vision */}
-      <section id="vision" className="section-spacing">
-        <div className="container mx-auto px-6 max-w-3xl text-center sr">
-          <div className="flex items-center justify-center gap-3 mb-6">
-            <Eye className="w-5 h-5 text-primary" />
-            <span className="text-sm uppercase tracking-[0.2em] text-primary">Engineering Philosophy</span>
-          </div>
-          <h2 className="font-display text-4xl md:text-5xl font-bold mb-8">
-            Bio-Inspired.<br /><span className="text-primary">Engineered.</span>
-          </h2>
-          <p className="text-lg text-muted-foreground leading-relaxed mb-6">
-            Most humanoid robots fail because they prioritize acrobatics over intelligence — wasting computational power trying to balance on two legs. JARVIS operates on a different philosophy: by utilizing a geometrically perfect mechanical base, we free up 100% of CPU power for true Artificial Intelligence, computer vision, and social interaction.
-          </p>
-          <p className="text-muted-foreground leading-relaxed">
-            JARVIS is a generative, contextual android. He does not use pre-recorded lines. Powered by the Gemini AI API, OpenCV face tracking, and a multi-board distributed architecture, he sees, listens, thinks, and speaks in real time.
-          </p>
-        </div>
-      </section>
+/* ─── Architecture ─── */
+const boards = [
+  { img: boardRaspi, title: "Raspberry Pi 3B+", codename: "The Master", desc: "Linux OS, OpenCV vision, Gemini AI API, STT/TTS audio routing. The central brain.", accent: "cyan" as const },
+  { img: boardUno, title: "Arduino Uno", codename: "The Bouncer", desc: "Ultra-low-power perimeter guard. HC-SR04 ultrasonic at 1m range. Wakes the Master on human detection.", accent: "blue" as const },
+  { img: boardArduino, title: "Arduino Mega", codename: "The Muscle", desc: "Real-time motor control via L298N driver. 30cm kill-zone safety override — ignores AI if obstacle detected.", accent: "purple" as const },
+  { img: boardPico, title: "Raspberry Pi Pico", codename: "The Artist", desc: "Dedicated NeoPixel LED animation processor. Blue (listening), gold (thinking), white (speaking).", accent: "cyan" as const },
+];
 
-      {/* Meet JARVIS */}
-      <section className="section-spacing relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
-        <div className="container mx-auto px-6 relative sr">
-          <div className="flex flex-col lg:flex-row items-center gap-16">
-            <div className="flex-1">
-              <img src={jarvisShowcase} alt="JARVIS full body showcase" className="w-full max-w-md mx-auto drop-shadow-[0_0_40px_hsl(210_100%_60%/0.2)]" />
+const accentMap = {
+  cyan: { dot: "bg-jarvis-cyan", border: "border-jarvis-cyan/20", hover: "hover:border-jarvis-cyan/35", glow: "group-hover:shadow-[0_0_30px_rgba(0,229,255,0.06)]" },
+  blue: { dot: "bg-jarvis-blue", border: "border-jarvis-blue/20", hover: "hover:border-jarvis-blue/35", glow: "group-hover:shadow-[0_0_30px_rgba(61,90,254,0.06)]" },
+  purple: { dot: "bg-jarvis-purple", border: "border-jarvis-purple/20", hover: "hover:border-jarvis-purple/35", glow: "group-hover:shadow-[0_0_30px_rgba(124,77,255,0.06)]" },
+};
+
+function Architecture() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <Section id="architecture">
+      <div className="absolute top-0 left-0 w-[600px] h-[600px] rounded-full bg-jarvis-blue/[0.02] blur-[200px] pointer-events-none" />
+      <div ref={ref} className="max-w-5xl mx-auto px-6 lg:px-10">
+        <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5">
+          Multi-Core Brain
+        </motion.p>
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide">
+          4-Board Architecture
+        </motion.h2>
+        <motion.p initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.25 }} className="mt-6 text-muted-foreground text-[15px] max-w-2xl leading-[1.8]">
+          Tasks are distributed across four dedicated logic boards via a centralized USB bus using star topology. No single chip is bottlenecked.
+        </motion.p>
+
+        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-5 mt-14">
+          {boards.map((b, i) => {
+            const a = accentMap[b.accent];
+            return (
+              <motion.div key={b.title} initial={{ opacity: 0, y: 25 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.7, delay: 0.2 + i * 0.1, ease }}
+                className={`group relative rounded-xl border ${a.border} ${a.hover} bg-card/20 backdrop-blur-sm p-6 text-center transition-all duration-500 overflow-hidden ${a.glow}`}
+              >
+                <div className="absolute inset-0 rounded-xl bg-jarvis-cyan/[0.015] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <img src={b.img} alt={b.title} className="w-24 h-24 mx-auto mb-4 object-contain relative z-10 group-hover:scale-110 transition-transform duration-500" />
+                <h3 className="font-display font-bold text-sm text-foreground relative z-10">{b.title}</h3>
+                <div className="flex items-center justify-center gap-2 my-2 relative z-10">
+                  <div className={`w-1.5 h-1.5 rounded-full ${a.dot}`} />
+                  <p className="text-[10px] tracking-[0.2em] uppercase text-jarvis-cyan">{b.codename}</p>
+                </div>
+                <p className="text-[12px] text-muted-foreground leading-relaxed relative z-10">{b.desc}</p>
+              </motion.div>
+            );
+          })}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* ─── Wiring Diagram ─── */
+function WiringDiagram() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <Section id="wiring">
+      <div className="absolute top-1/2 right-0 w-[500px] h-[500px] rounded-full bg-jarvis-purple/[0.025] blur-[180px] pointer-events-none -translate-y-1/2" />
+      <div ref={ref} className="max-w-5xl mx-auto px-6 lg:px-10">
+        <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5">
+          Wiring
+        </motion.p>
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-14">
+          System Topology
+        </motion.h2>
+
+        {/* Star Topology */}
+        <motion.div initial={{ opacity: 0, y: 25 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.2, ease }} className="glass-card glow-border p-8 md:p-12 mb-6">
+          <h3 className="font-display font-bold text-sm tracking-wider text-center mb-8 text-foreground">USB STAR TOPOLOGY — DATA ROUTING</h3>
+          <div className="flex flex-col items-center gap-0">
+            <div className="bg-jarvis-cyan/10 border border-jarvis-cyan/30 rounded-xl px-6 py-4 text-center glow-border">
+              <p className="font-display font-bold text-jarvis-cyan text-sm">Raspberry Pi 3B+</p>
+              <p className="text-[10px] text-muted-foreground">THE MASTER · USB Hub Center</p>
             </div>
-            <div className="flex-1 space-y-6">
-              <h2 className="font-display text-4xl md:text-5xl font-bold">Meet <span className="text-primary">JARVIS</span></h2>
-              <p className="text-muted-foreground text-lg leading-relaxed">
-                A 4-foot boxy humanoid android built from wood and reinforced cardboard. Designed to look bipedal while secretly running on a hyper-stable, zero-turn 6-point chassis with BO motor drive wheels and ball casters.
-              </p>
-              <div className="grid grid-cols-2 gap-4 pt-4">
-                {[
-                  { label: "Height", value: "4 feet" },
-                  { label: "Compute Boards", value: "4-board edge" },
-                  { label: "Chassis", value: "6-point tripod" },
-                  { label: "AI Engine", value: "Gemini API" },
-                  { label: "Vision", value: "OpenCV" },
-                  { label: "Frame", value: "Wood + Cardboard" },
-                ].map((s) => (
-                  <div key={s.label} className="glass-panel glow-border p-4">
-                    <p className="text-xs text-muted-foreground uppercase tracking-wider">{s.label}</p>
-                    <p className="text-sm font-semibold text-primary mt-1">{s.value}</p>
+            <div className="flex items-start gap-0 w-full max-w-2xl mt-0">
+              {[
+                { name: "Arduino Uno", code: "THE BOUNCER", port: "/dev/ttyACM0" },
+                { name: "Arduino Mega", code: "THE MUSCLE", port: "/dev/ttyUSB0" },
+                { name: "Pi Pico", code: "THE ARTIST", port: "/dev/ttyACM1" },
+              ].map((b) => (
+                <div key={b.name} className="flex-1 flex flex-col items-center">
+                  <div className="w-px h-10 bg-gradient-to-b from-jarvis-cyan/60 to-jarvis-cyan/20" />
+                  <div className="w-2 h-2 rounded-full bg-jarvis-cyan glow-dot" />
+                  <div className="w-px h-4 bg-jarvis-cyan/20" />
+                  <div className="rounded-lg border border-border bg-secondary/50 px-3 py-3 text-center w-full mx-1">
+                    <p className="font-display font-semibold text-[11px] text-foreground">{b.name}</p>
+                    <p className="text-[9px] text-muted-foreground">{b.code}</p>
+                    <p className="text-[8px] text-jarvis-cyan mt-1 font-mono">{b.port}</p>
                   </div>
-                ))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* 4-Board Architecture */}
-      <section id="architecture" className="section-spacing">
-        <div className="container mx-auto px-6">
-          <div className="sr text-center mb-16">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <CircuitBoard className="w-5 h-5 text-primary" />
-              <span className="text-sm uppercase tracking-[0.2em] text-primary">Multi-Core Brain</span>
-            </div>
-            <h2 className="font-display text-4xl md:text-5xl font-bold">4-Board Edge-Computing <span className="text-primary">Architecture</span></h2>
-            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">Tasks are distributed across four dedicated logic boards via a centralized USB bus using star topology. No single chip is bottlenecked.</p>
-          </div>
-
-          <div className="sr grid md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-6xl mx-auto">
-            {[
-              { img: boardRaspi, title: "Raspberry Pi 3B+", codename: "The Master", desc: "Linux OS, OpenCV vision processing, Gemini AI API, STT/TTS audio routing. The central brain.", color: "text-primary" },
-              { img: boardUno, title: "Arduino Uno", codename: "The Bouncer", desc: "Ultra-low-power perimeter guard. HC-SR04 ultrasonic at 1m range. Wakes the Master on human detection.", color: "text-primary" },
-              { img: boardArduino, title: "Arduino Mega", codename: "The Muscle", desc: "Real-time motor control via L298N driver. 30cm kill-zone safety override — ignores AI if obstacle detected.", color: "text-primary" },
-              { img: boardPico, title: "Raspberry Pi Pico", codename: "The Artist", desc: "Dedicated NeoPixel LED animation processor. Pulsing blue (listening), gold (thinking), flickering white (speaking).", color: "text-primary" },
-            ].map((b) => (
-              <div key={b.title} className="glass-panel glow-border p-6 text-center group hover:border-primary/30 transition-all duration-500">
-                <img src={b.img} alt={b.title} className="w-28 h-28 mx-auto mb-4 object-contain group-hover:scale-110 transition-transform duration-500" />
-                <h3 className="font-display text-lg font-bold">{b.title}</h3>
-                <p className={`text-xs font-semibold uppercase tracking-wider ${b.color} mb-3`}>{b.codename}</p>
-                <p className="text-xs text-muted-foreground leading-relaxed">{b.desc}</p>
-              </div>
-            ))}
-          </div>
-
-          {/* Connection bus */}
-          <div className="sr flex justify-center mt-10">
-            <div className="flex items-center gap-2">
-              {[0, 1, 2, 3].map((i) => (
-                <div key={i} className="flex items-center gap-2">
-                  <div className="w-3 h-3 rounded-full bg-primary glow-dot" />
-                  {i < 3 && <div className="w-16 md:w-24 h-px bg-gradient-to-r from-primary/50 to-primary/10" />}
                 </div>
               ))}
             </div>
           </div>
-          <p className="text-center text-xs text-muted-foreground mt-3 sr">USB Star Topology · Common Ground · Dual-Juice Power Isolation</p>
-        </div>
-      </section>
+          <p className="text-[10px] text-muted-foreground text-center mt-6">Shielded USB cables · No EMI · Server-rack routing</p>
+        </motion.div>
 
-      {/* Wiring Diagram */}
-      <section className="section-spacing relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
-        <div className="container mx-auto px-6 relative max-w-5xl">
-          <div className="sr text-center mb-16">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <Cable className="w-5 h-5 text-primary" />
-              <span className="text-sm uppercase tracking-[0.2em] text-primary">Wiring</span>
-            </div>
-            <h2 className="font-display text-4xl md:text-5xl font-bold">System <span className="text-primary">Topology</span></h2>
-            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">Centralized USB bus with star topology and dual-isolated power domains. All boards share a common ground for signal integrity.</p>
-          </div>
-
-          {/* Star Topology Diagram */}
-          <div className="sr glass-panel glow-border p-8 md:p-12 mb-8">
-            <h3 className="font-display text-lg font-bold text-center mb-8">USB Star Topology — Data Routing</h3>
-            <div className="relative flex flex-col items-center gap-0">
-              {/* Center hub */}
-              <div className="relative w-full flex justify-center">
-                <div className="relative z-10 bg-primary/20 border-2 border-primary rounded-xl px-6 py-4 text-center glow-border">
-                  <p className="font-display font-bold text-primary">Raspberry Pi 3B+</p>
-                  <p className="text-xs text-muted-foreground">THE MASTER · USB Hub Center</p>
-                </div>
-              </div>
-
-              {/* Lines from center */}
-              <div className="w-full flex justify-center">
-                <div className="flex items-start gap-0 w-full max-w-2xl">
-                  <div className="flex-1 flex flex-col items-center">
-                    <div className="w-px h-12 bg-gradient-to-b from-primary to-primary/30" />
-                    <div className="w-2 h-2 rounded-full bg-primary glow-dot" />
-                    <div className="w-px h-4 bg-primary/30" />
-                    <div className="bg-secondary border border-border rounded-lg px-4 py-3 text-center">
-                      <p className="font-display font-semibold text-sm">Arduino Uno</p>
-                      <p className="text-xs text-muted-foreground">THE BOUNCER</p>
-                      <p className="text-[10px] text-primary mt-1">USB Serial · /dev/ttyACM0</p>
-                    </div>
-                  </div>
-                  <div className="flex-1 flex flex-col items-center">
-                    <div className="w-px h-12 bg-gradient-to-b from-primary to-primary/30" />
-                    <div className="w-2 h-2 rounded-full bg-primary glow-dot" />
-                    <div className="w-px h-4 bg-primary/30" />
-                    <div className="bg-secondary border border-border rounded-lg px-4 py-3 text-center">
-                      <p className="font-display font-semibold text-sm">Arduino Mega</p>
-                      <p className="text-xs text-muted-foreground">THE MUSCLE</p>
-                      <p className="text-[10px] text-primary mt-1">USB Serial · /dev/ttyUSB0</p>
-                    </div>
-                  </div>
-                  <div className="flex-1 flex flex-col items-center">
-                    <div className="w-px h-12 bg-gradient-to-b from-primary to-primary/30" />
-                    <div className="w-2 h-2 rounded-full bg-primary glow-dot" />
-                    <div className="w-px h-4 bg-primary/30" />
-                    <div className="bg-secondary border border-border rounded-lg px-4 py-3 text-center">
-                      <p className="font-display font-semibold text-sm">Pi Pico</p>
-                      <p className="text-xs text-muted-foreground">THE ARTIST</p>
-                      <p className="text-[10px] text-primary mt-1">USB Serial · /dev/ttyACM1</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-            <p className="text-xs text-muted-foreground text-center mt-6">Short shielded USB cables · No EMI interference · Professional server-rack style routing</p>
-          </div>
-
-          {/* Power Domain Diagram */}
-          <div className="sr glass-panel glow-border p-8 md:p-12">
-            <h3 className="font-display text-lg font-bold text-center mb-8">Dual-Juice Power Isolation</h3>
-            <div className="grid md:grid-cols-2 gap-8">
-              {/* Dirty Power Domain */}
-              <div className="border border-destructive/30 rounded-xl p-6 bg-destructive/5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Battery className="w-5 h-5 text-destructive" />
-                  <h4 className="font-display font-bold text-destructive">DIRTY POWER · 12V Domain</h4>
-                </div>
-                <div className="space-y-3">
-                  <div className="bg-background/50 rounded-lg p-3 border border-border">
-                    <p className="text-xs font-semibold">12V Li-ion Battery</p>
-                    <p className="text-[10px] text-muted-foreground">Lowest chassis point · Low CoG</p>
-                  </div>
-                  <div className="flex justify-center"><div className="w-px h-4 bg-destructive/50" /></div>
-                  <div className="bg-background/50 rounded-lg p-3 border border-border">
-                    <p className="text-xs font-semibold">1000μF Capacitor</p>
-                    <p className="text-[10px] text-muted-foreground">Brownout spike absorption</p>
-                  </div>
-                  <div className="flex justify-center"><div className="w-px h-4 bg-destructive/50" /></div>
-                  <div className="bg-background/50 rounded-lg p-3 border border-border">
-                    <p className="text-xs font-semibold">L298N Motor Driver</p>
-                    <p className="text-[10px] text-muted-foreground">VIN 5–35V · 2× BO Motor output</p>
-                  </div>
-                  <div className="flex justify-center"><div className="w-px h-4 bg-destructive/50" /></div>
-                  <div className="grid grid-cols-2 gap-2">
-                    <div className="bg-background/50 rounded-lg p-2 border border-border text-center">
-                      <p className="text-[10px] font-semibold">BO Motor L</p>
-                    </div>
-                    <div className="bg-background/50 rounded-lg p-2 border border-border text-center">
-                      <p className="text-[10px] font-semibold">BO Motor R</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-
-              {/* Clean Power Domain */}
-              <div className="border border-primary/30 rounded-xl p-6 bg-primary/5">
-                <div className="flex items-center gap-2 mb-4">
-                  <Zap className="w-5 h-5 text-primary" />
-                  <h4 className="font-display font-bold text-primary">CLEAN POWER · 5V Domain</h4>
-                </div>
-                <div className="space-y-3">
-                  <div className="bg-background/50 rounded-lg p-3 border border-border">
-                    <p className="text-xs font-semibold">20,000mAh 5V Power Bank</p>
-                    <p className="text-[10px] text-muted-foreground">Smooth regulated voltage</p>
-                  </div>
-                  <div className="flex justify-center"><div className="w-px h-4 bg-primary/50" /></div>
-                  <div className="bg-background/50 rounded-lg p-3 border border-border">
-                    <p className="text-xs font-semibold">Raspberry Pi 3B+ (Master)</p>
-                    <p className="text-[10px] text-muted-foreground">~700mA · USB hub to sub-boards</p>
-                  </div>
-                  <div className="flex justify-center"><div className="w-px h-4 bg-primary/50" /></div>
-                  <div className="grid grid-cols-3 gap-2">
-                    <div className="bg-background/50 rounded-lg p-2 border border-border text-center">
-                      <p className="text-[10px] font-semibold">Uno</p>
-                      <p className="text-[9px] text-muted-foreground">~50mA</p>
-                    </div>
-                    <div className="bg-background/50 rounded-lg p-2 border border-border text-center">
-                      <p className="text-[10px] font-semibold">Mega</p>
-                      <p className="text-[9px] text-muted-foreground">~100mA</p>
-                    </div>
-                    <div className="bg-background/50 rounded-lg p-2 border border-border text-center">
-                      <p className="text-[10px] font-semibold">Pico</p>
-                      <p className="text-[9px] text-muted-foreground">~30mA</p>
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Common Ground Bridge */}
-            <div className="mt-8 border border-yellow-500/30 rounded-xl p-4 bg-yellow-500/5 text-center">
-              <p className="text-xs font-bold text-yellow-500 uppercase tracking-wider mb-1">⚡ Common Ground Bridge</p>
-              <p className="text-[11px] text-muted-foreground">GND of 12V battery and 5V power bank connected at one point. Enables 5V brain to send signals to 12V muscles without frying circuitry.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Power & Safety */}
-      <section className="section-spacing relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
-        <div className="container mx-auto px-6 relative max-w-4xl">
-          <div className="sr text-center mb-12">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <Shield className="w-5 h-5 text-primary" />
-              <span className="text-sm uppercase tracking-[0.2em] text-primary">Power & Safety</span>
-            </div>
-            <h2 className="font-display text-4xl md:text-5xl font-bold">Dual-Juice <span className="text-primary">Architecture</span></h2>
-          </div>
-          <div className="sr grid md:grid-cols-2 gap-6">
-            <div className="glass-panel glow-border p-6">
-              <Battery className="w-6 h-6 text-primary mb-3" />
-              <h3 className="font-display font-bold mb-2">Muscle Juice (Dirty Power)</h3>
-              <p className="text-sm text-muted-foreground">12V Li-ion battery, lowest chassis point for low CoG. Wired exclusively to L298N motor driver. 1000μF capacitor for brownout protection.</p>
-            </div>
-            <div className="glass-panel glow-border p-6">
-              <Zap className="w-6 h-6 text-primary mb-3" />
-              <h3 className="font-display font-bold mb-2">Brain Juice (Clean Power)</h3>
-              <p className="text-sm text-muted-foreground">20,000mAh 5V power bank. Smooth voltage for all microcontrollers. Common ground bridge connects both domains for signal integrity.</p>
-            </div>
-            <div className="glass-panel glow-border p-6">
-              <Radio className="w-6 h-6 text-primary mb-3" />
-              <h3 className="font-display font-bold mb-2">Dual-Ping Ultrasonic Security</h3>
-              <p className="text-sm text-muted-foreground">Sensor 1 (Uno): 1m wake-up zone triggers Pi boot. Sensor 2 (Mega): 30cm kill-zone — hardware motor override, ignores all AI commands.</p>
-            </div>
-            <div className="glass-panel glow-border p-6">
-              <Shield className="w-6 h-6 text-primary mb-3" />
-              <h3 className="font-display font-bold mb-2">Fail-Safes</h3>
-              <p className="text-sm text-muted-foreground">Brownout capacitor, verbal diagnostics announcer on drive power loss, physical kill switch severing common ground for instant shutdown.</p>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Build Process */}
-      <section id="build" className="section-spacing">
-        <div className="container mx-auto px-6 sr">
-          <div className="flex flex-col lg:flex-row items-center gap-16">
-            <div className="flex-1 space-y-6">
-              <div className="flex items-center gap-3 mb-2">
-                <Wrench className="w-5 h-5 text-primary" />
-                <span className="text-sm uppercase tracking-[0.2em] text-primary">Fabrication</span>
-              </div>
-              <h2 className="font-display text-4xl md:text-5xl font-bold">From concept to <span className="text-primary">reality</span></h2>
-              <p className="text-muted-foreground leading-relaxed">
-                JARVIS is built from 6mm/12mm plywood (structural backbone) and double-wall corrugated cardboard (geometry and silhouette). A 25mm PVC pipe spine rises from the center of the chassis, with a "Palla" tray at waist height.
-              </p>
-              <div className="space-y-3 pt-2">
-                {[
-                  "Phase 1–2: 6-point chassis, BO motor mounts, PVC spine",
-                  "Phase 3–4: Leg boxes, torso shell, arm articulation",
-                  "Phase 5–6: Head unit with AV hub, arc reactor chest LED",
-                  "Phase 7: Electronics mounting on nylon standoffs",
-                  "Phase 8: Spray paint, matte varnish, craft foam detailing",
-                ].map((s, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <div className="mt-1.5 w-2 h-2 rounded-full bg-primary glow-dot flex-shrink-0" />
-                    <p className="text-sm text-muted-foreground">{s}</p>
+        {/* Power Domains */}
+        <motion.div initial={{ opacity: 0, y: 25 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.35, ease }} className="glass-card glow-border p-8 md:p-12">
+          <h3 className="font-display font-bold text-sm tracking-wider text-center mb-8 text-foreground">DUAL-JUICE POWER ISOLATION</h3>
+          <div className="grid md:grid-cols-2 gap-6">
+            {/* Dirty */}
+            <div className="rounded-xl border border-destructive/20 p-6 bg-destructive/[0.03]">
+              <h4 className="font-display font-bold text-destructive text-xs tracking-wider mb-4">DIRTY POWER · 12V</h4>
+              <div className="space-y-2">
+                {["12V Li-ion Battery — lowest chassis point", "1000μF Capacitor — brownout absorption", "L298N Motor Driver — VIN 5–35V", "2× BO Motors — drive wheels"].map((t) => (
+                  <div key={t} className="rounded-lg bg-background/50 border border-border px-3 py-2">
+                    <p className="text-[11px] text-muted-foreground">{t}</p>
                   </div>
                 ))}
               </div>
             </div>
-            <div className="flex-1">
-              <img src={jarvisCloseup} alt="JARVIS head closeup with LED eyes" className="w-full max-w-md mx-auto rounded-2xl drop-shadow-[0_0_40px_hsl(210_100%_60%/0.15)]" />
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Gallery */}
-      <section id="gallery" className="section-spacing relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
-        <div className="container mx-auto px-6 relative">
-          <div className="sr text-center mb-16">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <Image className="w-5 h-5 text-primary" />
-              <span className="text-sm uppercase tracking-[0.2em] text-primary">Gallery</span>
-            </div>
-            <h2 className="font-display text-4xl md:text-5xl font-bold">Visual <span className="text-primary">Showcase</span></h2>
-          </div>
-          <div className="sr grid grid-cols-2 md:grid-cols-4 gap-4 max-w-5xl mx-auto">
-            {[
-              { img: jarvisHero, alt: "JARVIS full body front" },
-              { img: jarvisShowcase, alt: "JARVIS 3/4 angle" },
-              { img: jarvisCloseup, alt: "JARVIS head closeup" },
-              { img: jarvisDetail, alt: "JARVIS hand detail" },
-              { img: boardRaspi, alt: "Raspberry Pi 3B+ — The Master" },
-              { img: boardUno, alt: "Arduino Uno — The Bouncer" },
-              { img: boardArduino, alt: "Arduino Mega — The Muscle" },
-              { img: boardPico, alt: "Raspberry Pi Pico — The Artist" },
-            ].map((item, i) => (
-              <div key={i} className="glass-panel glow-border overflow-hidden aspect-square group">
-                <img src={item.img} alt={item.alt} className="w-full h-full object-contain p-2 group-hover:scale-105 transition-transform duration-700" />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Docs */}
-      <section id="docs" className="section-spacing">
-        <div className="container mx-auto px-6 max-w-3xl">
-          <div className="sr text-center mb-12">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <FileText className="w-5 h-5 text-primary" />
-              <span className="text-sm uppercase tracking-[0.2em] text-primary">Documentation</span>
-            </div>
-            <h2 className="font-display text-4xl md:text-5xl font-bold">Project <span className="text-primary">Archive</span></h2>
-          </div>
-          <div className="sr space-y-4">
-            {[
-              { name: "The JARVIS Manifesto", desc: "Engineering philosophy & system design", file: "THE_JARVIS_MANIFESTO.docx" },
-              { name: "The JARVIS Compendium", desc: "Complete reference encyclopedia", file: "THE_JARVIS_COMPENDIUM.docx" },
-              { name: "Fabrication Guide", desc: "Physical build manual", file: "JARVIS_FABRICATION_GUIDE.docx" },
-              { name: "Print Manual", desc: "Step-by-step build, wiring & code", file: "JARVIS_PRINT_MANUAL.docx" },
-              { name: "The Complete Archive", desc: "Master 131-page reference", file: "THE_COMPLETE_ARCHIVE.docx" },
-            ].map((doc) => (
-              <a
-                key={doc.file}
-                href={`/docs/${doc.file}`}
-                download={doc.file}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="glass-panel glow-border p-5 flex items-center justify-between hover:border-primary/30 transition-all group block"
-              >
-                <div className="flex items-center gap-4">
-                  <FileText className="w-5 h-5 text-primary flex-shrink-0" />
-                  <div>
-                    <span className="text-sm font-medium">{doc.name}</span>
-                    <p className="text-xs text-muted-foreground">{doc.desc}</p>
+            {/* Clean */}
+            <div className="rounded-xl border border-jarvis-cyan/20 p-6 bg-jarvis-cyan/[0.03]">
+              <h4 className="font-display font-bold text-jarvis-cyan text-xs tracking-wider mb-4">CLEAN POWER · 5V</h4>
+              <div className="space-y-2">
+                {["20,000mAh 5V Power Bank — smooth regulated", "Pi 3B+ (Master) — ~700mA via USB", "Arduino Uno — ~50mA · Arduino Mega — ~100mA", "Pi Pico — ~30mA + NeoPixel up to 720mA"].map((t) => (
+                  <div key={t} className="rounded-lg bg-background/50 border border-border px-3 py-2">
+                    <p className="text-[11px] text-muted-foreground">{t}</p>
                   </div>
-                </div>
-                <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 ml-4" />
-              </a>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Team */}
-      <section id="team" className="section-spacing relative">
-        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
-        <div className="container mx-auto px-6 max-w-3xl relative">
-          <div className="sr text-center mb-16">
-            <div className="flex items-center justify-center gap-3 mb-6">
-              <Users className="w-5 h-5 text-primary" />
-              <span className="text-sm uppercase tracking-[0.2em] text-primary">Architect Division</span>
-            </div>
-            <h2 className="font-display text-4xl md:text-5xl font-bold">The <span className="text-primary">Team</span></h2>
-          </div>
-          <div className="sr space-y-10">
-            <div className="text-center">
-              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">Lead Architect</p>
-              <p className="font-display text-2xl font-bold">Vikhyat Gupta</p>
-            </div>
-            <div className="text-center">
-              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-4">Fabrication Team</p>
-              <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                {["Aayush Agarwal", "Shresth Adukia", "Adhyansh Kumar", "Rudraksh Sharma"].map((n) => (
-                  <div key={n} className="glass-panel p-4"><p className="font-display font-semibold text-sm">{n}</p></div>
                 ))}
               </div>
             </div>
-            <div className="text-center">
-              <p className="text-xs uppercase tracking-[0.2em] text-muted-foreground mb-2">Organization</p>
-              <p className="font-display text-lg font-semibold text-primary">St. Anthony's School</p>
-              <p className="text-xs text-muted-foreground mt-1">Target Deployment: September 16th</p>
-            </div>
           </div>
-        </div>
-      </section>
-
-      {/* Footer */}
-      <footer className="border-t border-border py-12">
-        <div className="container mx-auto px-6 text-center">
-          <p className="font-display text-lg font-bold text-primary mb-2">PROJECT JARVIS</p>
-          <p className="text-sm text-muted-foreground">A 4-board edge-computing android · Architect Division · St. Anthony's School</p>
-        </div>
-      </footer>
-    </div>
+          <motion.div initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.6 }} className="mt-6 rounded-xl border border-yellow-500/20 p-4 bg-yellow-500/[0.03] text-center">
+            <p className="text-[10px] font-bold text-yellow-500 tracking-wider uppercase mb-1">⚡ Common Ground Bridge</p>
+            <p className="text-[11px] text-muted-foreground">GND of 12V battery and 5V power bank connected at one point for signal integrity.</p>
+          </motion.div>
+        </motion.div>
+      </div>
+    </Section>
   );
-};
+}
+
+/* ─── Build Process ─── */
+const phases = [
+  { n: "01", title: "Chassis & Drive System", desc: "12mm plywood base, 6-point tripod with 2 BO motors and 4 ball casters. Zero-wobble engineering." },
+  { n: "02", title: "Spine & Skeleton", desc: "25mm PVC pipe spine, leg boxes, torso shell, arm articulation from 6mm plywood and reinforced cardboard." },
+  { n: "03", title: "Electronics Integration", desc: "All boards mounted on M3 nylon standoffs. USB star topology, dual-juice power wiring, sensor array." },
+  { n: "04", title: "Head & AV Hub", desc: "USB webcam for OpenCV vision + STT mic, external speaker for TTS, NeoPixel arc reactor in chest." },
+  { n: "05", title: "Paint & Polish", desc: "Black/silver spray paint, matte varnish, craft foam detailing. Cable management and exhibit prep." },
+];
+
+function BuildProcess() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <Section id="build">
+      <div className="absolute bottom-0 right-0 w-[500px] h-[500px] rounded-full bg-jarvis-cyan/[0.02] blur-[180px] pointer-events-none" />
+      <div ref={ref} className="max-w-4xl mx-auto px-6 lg:px-10">
+        <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5">
+          Fabrication
+        </motion.p>
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-14">
+          Build Process
+        </motion.h2>
+
+        <div className="flex flex-col lg:flex-row gap-12 items-start">
+          <div className="flex-1 space-y-6">
+            {phases.map((p, i) => (
+              <motion.div key={p.n} initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.25 + i * 0.15, ease }} className="flex gap-6 items-start">
+                <div className="hidden sm:flex flex-shrink-0 w-16 h-16 rounded-xl border border-border bg-card/30 items-center justify-center">
+                  <span className="font-display font-bold text-lg bg-gradient-to-b from-jarvis-cyan to-jarvis-blue bg-clip-text text-transparent">{p.n}</span>
+                </div>
+                <div>
+                  <h3 className="font-display font-semibold text-sm text-foreground mb-1">{p.title}</h3>
+                  <p className="text-[13px] text-muted-foreground leading-[1.7]">{p.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={inView ? { opacity: 1, scale: 1 } : {}} transition={{ duration: 1, delay: 0.3, ease }} className="flex-1 hidden lg:block">
+            <img src={jarvisCloseup} alt="JARVIS head closeup" className="w-full max-w-sm mx-auto rounded-2xl drop-shadow-[0_0_50px_rgba(0,229,255,0.1)]" />
+          </motion.div>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* ─── Gallery ─── */
+function Gallery() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const images = [
+    { src: jarvisHero, alt: "JARVIS full body" },
+    { src: jarvisShowcase, alt: "JARVIS 3/4 angle" },
+    { src: jarvisCloseup, alt: "JARVIS head closeup" },
+    { src: jarvisDetail, alt: "JARVIS hand detail" },
+    { src: boardRaspi, alt: "Raspberry Pi 3B+" },
+    { src: boardUno, alt: "Arduino Uno" },
+    { src: boardArduino, alt: "Arduino Mega" },
+    { src: boardPico, alt: "Pi Pico" },
+  ];
+
+  return (
+    <Section id="gallery">
+      <div ref={ref} className="max-w-5xl mx-auto px-6 lg:px-10">
+        <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5">
+          Gallery
+        </motion.p>
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-14">
+          Visual Showcase
+        </motion.h2>
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+          {images.map((img, i) => (
+            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.2 + i * 0.07, ease }}
+              className="glass-card glow-border overflow-hidden aspect-square group"
+            >
+              <img src={img.src} alt={img.alt} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-700" />
+            </motion.div>
+          ))}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* ─── Documentation ─── */
+const docs = [
+  { name: "The JARVIS Manifesto", desc: "Engineering philosophy & system design", file: "THE_JARVIS_MANIFESTO.docx" },
+  { name: "The JARVIS Compendium", desc: "Complete reference encyclopedia", file: "THE_JARVIS_COMPENDIUM.docx" },
+  { name: "Fabrication Guide", desc: "Physical build manual", file: "JARVIS_FABRICATION_GUIDE.docx" },
+  { name: "Print Manual", desc: "Step-by-step build, wiring & code", file: "JARVIS_PRINT_MANUAL.docx" },
+  { name: "The Complete Archive", desc: "Master 131-page reference", file: "THE_COMPLETE_ARCHIVE.docx" },
+];
+
+function Documentation() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <Section id="docs">
+      <div className="absolute top-1/2 left-0 w-[400px] h-[400px] rounded-full bg-jarvis-purple/[0.02] blur-[160px] pointer-events-none -translate-y-1/2" />
+      <div ref={ref} className="max-w-4xl mx-auto px-6 lg:px-10">
+        <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5">
+          Resources
+        </motion.p>
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-14">
+          Documentation
+        </motion.h2>
+
+        <div className="space-y-3">
+          {docs.map((doc, i) => (
+            <motion.a key={doc.file} href={`/docs/${doc.file}`} download={doc.file} target="_blank" rel="noopener noreferrer"
+              initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.2 + i * 0.08, ease }}
+              className="group relative flex items-center justify-between rounded-xl border border-border bg-card/20 backdrop-blur-sm p-5 hover:border-jarvis-cyan/25 transition-all duration-500 overflow-hidden"
+            >
+              <div className="absolute inset-0 rounded-xl bg-jarvis-cyan/[0.015] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+              <div className="relative z-10 flex items-center gap-4">
+                <svg className="w-5 h-5 text-jarvis-cyan flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.2}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                </svg>
+                <div>
+                  <p className="font-display font-medium text-sm text-foreground">{doc.name}</p>
+                  <p className="text-[11px] text-muted-foreground">{doc.desc}</p>
+                </div>
+              </div>
+              <svg className="w-4 h-4 text-muted-foreground group-hover:text-jarvis-cyan transition-colors relative z-10 flex-shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+              </svg>
+            </motion.a>
+          ))}
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* ─── Team ─── */
+function Team() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <Section id="team">
+      <div ref={ref} className="max-w-3xl mx-auto px-6 lg:px-10">
+        <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5 text-center">
+          Architect Division
+        </motion.p>
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide text-center mb-14">
+          The Team
+        </motion.h2>
+
+        {/* Lead */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.25, ease }} className="text-center mb-12">
+          <p className="text-[9px] tracking-[0.5em] uppercase text-muted-foreground/50 mb-3">Lead Architect</p>
+          <p className="font-display font-bold text-xl text-foreground tracking-wide">Vikhyat Gupta</p>
+        </motion.div>
+
+        {/* Fabrication */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.4, ease }} className="text-center mb-12">
+          <p className="text-[9px] tracking-[0.5em] uppercase text-muted-foreground/50 mb-5">Fabrication Team</p>
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 sm:gap-4">
+            {["Aayush Agarwal", "Shresth Adukia", "Adhyansh Kumar", "Rudraksh Sharma"].map((name, i) => (
+              <motion.div key={name} initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.55 + i * 0.08, ease }}
+                className="group relative rounded-xl border border-border/25 bg-card/20 backdrop-blur-sm py-5 px-4 hover:border-jarvis-cyan/15 transition-all duration-500 overflow-hidden"
+              >
+                <div className="absolute inset-0 rounded-xl bg-jarvis-cyan/[0.015] opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
+                <p className="font-display font-medium text-sm text-foreground tracking-wide relative z-10">{name}</p>
+              </motion.div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Org */}
+        <motion.div initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.85 }} className="flex items-center justify-center gap-4">
+          <div className="h-px flex-1 max-w-[60px] bg-border" />
+          <p className="text-[10px] tracking-[0.3em] uppercase text-muted-foreground">St. Anthony's School</p>
+          <div className="h-px flex-1 max-w-[60px] bg-border" />
+        </motion.div>
+      </div>
+    </Section>
+  );
+}
+
+/* ─── Footer ─── */
+function Footer() {
+  return (
+    <footer className="border-t border-border/30 py-12">
+      <div className="max-w-7xl mx-auto px-6 lg:px-12 text-center">
+        <p className="font-display font-bold tracking-[0.3em] text-sm bg-gradient-to-r from-jarvis-cyan to-jarvis-blue bg-clip-text text-transparent mb-2">PROJECT JARVIS</p>
+        <p className="text-[11px] text-muted-foreground/50">A 4-board edge-computing android · Architect Division · St. Anthony's School</p>
+      </div>
+    </footer>
+  );
+}
+
+/* ─── Main Page ─── */
+const Index = () => (
+  <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+    <Nav />
+    <Hero />
+    <Vision />
+    <MeetJarvis />
+    <Architecture />
+    <WiringDiagram />
+    <BuildProcess />
+    <Gallery />
+    <Documentation />
+    <Team />
+    <Footer />
+  </div>
+);
 
 export default Index;
