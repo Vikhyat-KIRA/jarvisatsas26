@@ -1191,7 +1191,8 @@ const Index = () => {
     <QRSection />
     <Team />
     <Footer />
-  </div>
-);
+    </div>
+  );
+};
 
 export default Index;
