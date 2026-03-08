@@ -776,10 +776,19 @@ function Countdown() {
   const [tempTitle, setTempTitle] = useState(title);
   const [tempVenue, setTempVenue] = useState(venue);
 
-  const target = new Date(dateStr).getTime();
-  const [now, setNow] = useState(Date.now());
+  // Use ref to avoid stale closure in setInterval
+  const targetRef = useRef(new Date(dateStr).getTime());
   useEffect(() => {
-    const t = setInterval(() => setNow(Date.now()), 1000);
+    targetRef.current = new Date(dateStr).getTime();
+  }, [dateStr]);
+
+  const [timeLeft, setTimeLeft] = useState(() => Math.max(0, new Date(dateStr).getTime() - Date.now()));
+
+  useEffect(() => {
+    const t = setInterval(() => {
+      const diff = Math.max(0, targetRef.current - Date.now());
+      setTimeLeft(diff);
+    }, 1000);
     return () => clearInterval(t);
   }, []);
 
@@ -793,11 +802,28 @@ function Countdown() {
     setEditing(false);
   };
 
-  const diff = Math.max(0, target - now);
-  const days = Math.floor(diff / 86400000);
-  const hours = Math.floor((diff % 86400000) / 3600000);
-  const minutes = Math.floor((diff % 3600000) / 60000);
-  const seconds = Math.floor((diff % 60000) / 1000);
+  // Secret key combo: triple-click the "Exhibition Day" label to open settings
+  const [clickCount, setClickCount] = useState(0);
+  const clickTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const handleSecretClick = () => {
+    const newCount = clickCount + 1;
+    setClickCount(newCount);
+    if (clickTimer.current) clearTimeout(clickTimer.current);
+    if (newCount >= 3) {
+      setTempDate(dateStr);
+      setTempTitle(title);
+      setTempVenue(venue);
+      setEditing(!editing);
+      setClickCount(0);
+    } else {
+      clickTimer.current = setTimeout(() => setClickCount(0), 600);
+    }
+  };
+
+  const days = Math.floor(timeLeft / 86400000);
+  const hours = Math.floor((timeLeft % 86400000) / 3600000);
+  const minutes = Math.floor((timeLeft % 3600000) / 60000);
+  const seconds = Math.floor((timeLeft % 60000) / 1000);
 
   const units = [
     { label: "Days", value: days },
@@ -810,7 +836,13 @@ function Countdown() {
     <Section id="countdown">
       <div className="absolute inset-0 bg-gradient-to-b from-jarvis-cyan/[0.02] to-transparent pointer-events-none" />
       <div ref={ref} className="max-w-4xl mx-auto px-6 lg:px-10 text-center">
-        <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5">
+        <motion.p
+          initial={{ opacity: 0, y: 15 }}
+          animate={inView ? { opacity: 1, y: 0 } : {}}
+          transition={{ duration: 0.8 }}
+          onClick={handleSecretClick}
+          className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5 cursor-default select-none"
+        >
           Exhibition Day
         </motion.p>
         <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-2">
@@ -819,22 +851,11 @@ function Countdown() {
         <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.2 }} className="font-display italic text-lg text-foreground/60 mb-2">
           the moment everything comes alive
         </motion.p>
-        <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.25 }} className="text-muted-foreground text-[15px] mb-8">
+        <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.25 }} className="text-muted-foreground text-[15px] mb-12">
           {venue} · JARVIS goes live.
         </motion.p>
 
-        {/* Edit button */}
-        <motion.button
-          initial={{ opacity: 0 }}
-          animate={inView ? { opacity: 1 } : {}}
-          transition={{ delay: 0.3 }}
-          onClick={() => { setTempDate(dateStr); setTempTitle(title); setTempVenue(venue); setEditing(!editing); }}
-          className="mb-8 px-4 py-2 text-[10px] tracking-[0.2em] uppercase border border-jarvis-cyan/30 text-jarvis-cyan rounded-lg hover:bg-jarvis-cyan/10 transition-all duration-300"
-        >
-          {editing ? "Cancel" : "⚙ Customize Timer"}
-        </motion.button>
-
-        {/* Settings panel */}
+        {/* Hidden settings panel — triple-click "Exhibition Day" to reveal */}
         <AnimatePresence>
           {editing && (
             <motion.div
@@ -844,6 +865,7 @@ function Countdown() {
               className="overflow-hidden mb-8"
             >
               <div className="glass-card glow-border p-6 max-w-md mx-auto space-y-4 text-left">
+                <p className="text-[9px] tracking-[0.2em] uppercase text-muted-foreground/40 text-center mb-2">Admin Settings</p>
                 <div>
                   <label className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground block mb-1">Event Date & Time</label>
                   <input type="datetime-local" value={tempDate} onChange={(e) => setTempDate(e.target.value)}
@@ -859,10 +881,16 @@ function Countdown() {
                   <input type="text" value={tempVenue} onChange={(e) => setTempVenue(e.target.value)}
                     className="w-full bg-background border border-border/50 rounded-lg px-3 py-2 text-sm text-foreground focus:border-jarvis-cyan/50 focus:outline-none transition-colors" />
                 </div>
-                <button onClick={saveSettings}
-                  className="w-full py-2.5 bg-jarvis-cyan/20 border border-jarvis-cyan/40 text-jarvis-cyan font-semibold rounded-lg hover:bg-jarvis-cyan/30 transition-all duration-300 text-sm">
-                  Save Settings
-                </button>
+                <div className="flex gap-3">
+                  <button onClick={saveSettings}
+                    className="flex-1 py-2.5 bg-jarvis-cyan/20 border border-jarvis-cyan/40 text-jarvis-cyan font-semibold rounded-lg hover:bg-jarvis-cyan/30 transition-all duration-300 text-sm">
+                    Save
+                  </button>
+                  <button onClick={() => setEditing(false)}
+                    className="flex-1 py-2.5 border border-border/50 text-muted-foreground rounded-lg hover:border-border transition-all duration-300 text-sm">
+                    Close
+                  </button>
+                </div>
               </div>
             </motion.div>
           )}
