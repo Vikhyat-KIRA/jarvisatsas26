@@ -294,10 +294,21 @@ function WiringDiagram() {
         <motion.div initial={{ opacity: 0, y: 25 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.2, ease }} className="glass-card glow-border p-8 md:p-12 mb-6">
           <h3 className="font-display font-bold text-sm tracking-wider text-center mb-8 text-foreground">USB STAR TOPOLOGY — DATA ROUTING</h3>
           <div className="flex flex-col items-center gap-0">
+            {/* Master node */}
             <div className="bg-jarvis-cyan/10 border border-jarvis-cyan/30 rounded-xl px-6 py-4 text-center glow-border">
               <p className="font-display font-bold text-jarvis-cyan text-sm">Raspberry Pi 3B+</p>
               <p className="text-[10px] text-muted-foreground">THE MASTER · USB Hub Center</p>
             </div>
+            {/* Vertical trunk line */}
+            <div className="w-px h-8 bg-gradient-to-b from-jarvis-cyan/60 to-jarvis-cyan/30" />
+            {/* Horizontal branch line */}
+            <div className="w-full max-w-2xl h-px bg-jarvis-cyan/30 relative">
+              {/* Branch dots at each connection point */}
+              <div className="absolute left-[16.66%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-jarvis-cyan glow-dot" />
+              <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-jarvis-cyan glow-dot" />
+              <div className="absolute left-[83.33%] top-1/2 -translate-x-1/2 -translate-y-1/2 w-2 h-2 rounded-full bg-jarvis-cyan glow-dot" />
+            </div>
+            {/* Board cards with individual vertical lines */}
             <div className="flex items-start gap-0 w-full max-w-2xl mt-0">
               {[
                 { name: "Arduino Uno", code: "THE BOUNCER", port: "/dev/ttyACM0" },
@@ -305,9 +316,7 @@ function WiringDiagram() {
                 { name: "Pi Pico", code: "THE ARTIST", port: "/dev/ttyACM1" },
               ].map((b) => (
                 <div key={b.name} className="flex-1 flex flex-col items-center">
-                  <div className="w-px h-10 bg-gradient-to-b from-jarvis-cyan/60 to-jarvis-cyan/20" />
-                  <div className="w-2 h-2 rounded-full bg-jarvis-cyan glow-dot" />
-                  <div className="w-px h-4 bg-jarvis-cyan/20" />
+                  <div className="w-px h-8 bg-gradient-to-b from-jarvis-cyan/30 to-jarvis-cyan/15" />
                   <div className="rounded-lg border border-border bg-secondary/50 px-3 py-3 text-center w-full mx-1">
                     <p className="font-display font-semibold text-[11px] text-foreground">{b.name}</p>
                     <p className="text-[9px] text-muted-foreground">{b.code}</p>
