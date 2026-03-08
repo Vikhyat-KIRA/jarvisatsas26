@@ -547,9 +547,10 @@ function TechShowcase() {
         <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5">
           Systems
         </motion.p>
-        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-14">
-          Component Breakdown
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-3">
+          Component <span className="italic text-jarvis-cyan">Breakdown</span>
         </motion.h2>
+        <p className="font-display italic text-base text-foreground/40 mb-14">every part has a purpose</p>
 
         {/* Subsystem tabs */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.2 }} className="flex flex-wrap gap-2 mb-10">
