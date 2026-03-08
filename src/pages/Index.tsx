@@ -7,7 +7,7 @@ import boardRaspi from "@/assets/board-raspi.png";
 import boardArduino from "@/assets/board-arduino.png";
 import boardUno from "@/assets/board-uno.png";
 import boardPico from "@/assets/board-pico.png";
-import { Cpu, CircuitBoard, Microchip, Zap, FileText, Users, Eye, Wrench, Image, Shield, Radio, Battery } from "lucide-react";
+import { Cpu, CircuitBoard, Microchip, Zap, FileText, Users, Eye, Wrench, Image, Shield, Radio, Battery, Download, Cable } from "lucide-react";
 
 function useScrollReveal() {
   const ref = useRef<HTMLDivElement>(null);
@@ -167,6 +167,151 @@ const Index = () => {
         </div>
       </section>
 
+      {/* Wiring Diagram */}
+      <section className="section-spacing relative">
+        <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
+        <div className="container mx-auto px-6 relative max-w-5xl">
+          <div className="sr text-center mb-16">
+            <div className="flex items-center justify-center gap-3 mb-6">
+              <Cable className="w-5 h-5 text-primary" />
+              <span className="text-sm uppercase tracking-[0.2em] text-primary">Wiring</span>
+            </div>
+            <h2 className="font-display text-4xl md:text-5xl font-bold">System <span className="text-primary">Topology</span></h2>
+            <p className="text-muted-foreground mt-4 max-w-2xl mx-auto">Centralized USB bus with star topology and dual-isolated power domains. All boards share a common ground for signal integrity.</p>
+          </div>
+
+          {/* Star Topology Diagram */}
+          <div className="sr glass-panel glow-border p-8 md:p-12 mb-8">
+            <h3 className="font-display text-lg font-bold text-center mb-8">USB Star Topology — Data Routing</h3>
+            <div className="relative flex flex-col items-center gap-0">
+              {/* Center hub */}
+              <div className="relative w-full flex justify-center">
+                <div className="relative z-10 bg-primary/20 border-2 border-primary rounded-xl px-6 py-4 text-center glow-border">
+                  <p className="font-display font-bold text-primary">Raspberry Pi 3B+</p>
+                  <p className="text-xs text-muted-foreground">THE MASTER · USB Hub Center</p>
+                </div>
+              </div>
+
+              {/* Lines from center */}
+              <div className="w-full flex justify-center">
+                <div className="flex items-start gap-0 w-full max-w-2xl">
+                  <div className="flex-1 flex flex-col items-center">
+                    <div className="w-px h-12 bg-gradient-to-b from-primary to-primary/30" />
+                    <div className="w-2 h-2 rounded-full bg-primary glow-dot" />
+                    <div className="w-px h-4 bg-primary/30" />
+                    <div className="bg-secondary border border-border rounded-lg px-4 py-3 text-center">
+                      <p className="font-display font-semibold text-sm">Arduino Uno</p>
+                      <p className="text-xs text-muted-foreground">THE BOUNCER</p>
+                      <p className="text-[10px] text-primary mt-1">USB Serial · /dev/ttyACM0</p>
+                    </div>
+                  </div>
+                  <div className="flex-1 flex flex-col items-center">
+                    <div className="w-px h-12 bg-gradient-to-b from-primary to-primary/30" />
+                    <div className="w-2 h-2 rounded-full bg-primary glow-dot" />
+                    <div className="w-px h-4 bg-primary/30" />
+                    <div className="bg-secondary border border-border rounded-lg px-4 py-3 text-center">
+                      <p className="font-display font-semibold text-sm">Arduino Mega</p>
+                      <p className="text-xs text-muted-foreground">THE MUSCLE</p>
+                      <p className="text-[10px] text-primary mt-1">USB Serial · /dev/ttyUSB0</p>
+                    </div>
+                  </div>
+                  <div className="flex-1 flex flex-col items-center">
+                    <div className="w-px h-12 bg-gradient-to-b from-primary to-primary/30" />
+                    <div className="w-2 h-2 rounded-full bg-primary glow-dot" />
+                    <div className="w-px h-4 bg-primary/30" />
+                    <div className="bg-secondary border border-border rounded-lg px-4 py-3 text-center">
+                      <p className="font-display font-semibold text-sm">Pi Pico</p>
+                      <p className="text-xs text-muted-foreground">THE ARTIST</p>
+                      <p className="text-[10px] text-primary mt-1">USB Serial · /dev/ttyACM1</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            <p className="text-xs text-muted-foreground text-center mt-6">Short shielded USB cables · No EMI interference · Professional server-rack style routing</p>
+          </div>
+
+          {/* Power Domain Diagram */}
+          <div className="sr glass-panel glow-border p-8 md:p-12">
+            <h3 className="font-display text-lg font-bold text-center mb-8">Dual-Juice Power Isolation</h3>
+            <div className="grid md:grid-cols-2 gap-8">
+              {/* Dirty Power Domain */}
+              <div className="border border-destructive/30 rounded-xl p-6 bg-destructive/5">
+                <div className="flex items-center gap-2 mb-4">
+                  <Battery className="w-5 h-5 text-destructive" />
+                  <h4 className="font-display font-bold text-destructive">DIRTY POWER · 12V Domain</h4>
+                </div>
+                <div className="space-y-3">
+                  <div className="bg-background/50 rounded-lg p-3 border border-border">
+                    <p className="text-xs font-semibold">12V Li-ion Battery</p>
+                    <p className="text-[10px] text-muted-foreground">Lowest chassis point · Low CoG</p>
+                  </div>
+                  <div className="flex justify-center"><div className="w-px h-4 bg-destructive/50" /></div>
+                  <div className="bg-background/50 rounded-lg p-3 border border-border">
+                    <p className="text-xs font-semibold">1000μF Capacitor</p>
+                    <p className="text-[10px] text-muted-foreground">Brownout spike absorption</p>
+                  </div>
+                  <div className="flex justify-center"><div className="w-px h-4 bg-destructive/50" /></div>
+                  <div className="bg-background/50 rounded-lg p-3 border border-border">
+                    <p className="text-xs font-semibold">L298N Motor Driver</p>
+                    <p className="text-[10px] text-muted-foreground">VIN 5–35V · 2× BO Motor output</p>
+                  </div>
+                  <div className="flex justify-center"><div className="w-px h-4 bg-destructive/50" /></div>
+                  <div className="grid grid-cols-2 gap-2">
+                    <div className="bg-background/50 rounded-lg p-2 border border-border text-center">
+                      <p className="text-[10px] font-semibold">BO Motor L</p>
+                    </div>
+                    <div className="bg-background/50 rounded-lg p-2 border border-border text-center">
+                      <p className="text-[10px] font-semibold">BO Motor R</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              {/* Clean Power Domain */}
+              <div className="border border-primary/30 rounded-xl p-6 bg-primary/5">
+                <div className="flex items-center gap-2 mb-4">
+                  <Zap className="w-5 h-5 text-primary" />
+                  <h4 className="font-display font-bold text-primary">CLEAN POWER · 5V Domain</h4>
+                </div>
+                <div className="space-y-3">
+                  <div className="bg-background/50 rounded-lg p-3 border border-border">
+                    <p className="text-xs font-semibold">20,000mAh 5V Power Bank</p>
+                    <p className="text-[10px] text-muted-foreground">Smooth regulated voltage</p>
+                  </div>
+                  <div className="flex justify-center"><div className="w-px h-4 bg-primary/50" /></div>
+                  <div className="bg-background/50 rounded-lg p-3 border border-border">
+                    <p className="text-xs font-semibold">Raspberry Pi 3B+ (Master)</p>
+                    <p className="text-[10px] text-muted-foreground">~700mA · USB hub to sub-boards</p>
+                  </div>
+                  <div className="flex justify-center"><div className="w-px h-4 bg-primary/50" /></div>
+                  <div className="grid grid-cols-3 gap-2">
+                    <div className="bg-background/50 rounded-lg p-2 border border-border text-center">
+                      <p className="text-[10px] font-semibold">Uno</p>
+                      <p className="text-[9px] text-muted-foreground">~50mA</p>
+                    </div>
+                    <div className="bg-background/50 rounded-lg p-2 border border-border text-center">
+                      <p className="text-[10px] font-semibold">Mega</p>
+                      <p className="text-[9px] text-muted-foreground">~100mA</p>
+                    </div>
+                    <div className="bg-background/50 rounded-lg p-2 border border-border text-center">
+                      <p className="text-[10px] font-semibold">Pico</p>
+                      <p className="text-[9px] text-muted-foreground">~30mA</p>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            {/* Common Ground Bridge */}
+            <div className="mt-8 border border-yellow-500/30 rounded-xl p-4 bg-yellow-500/5 text-center">
+              <p className="text-xs font-bold text-yellow-500 uppercase tracking-wider mb-1">⚡ Common Ground Bridge</p>
+              <p className="text-[11px] text-muted-foreground">GND of 12V battery and 5V power bank connected at one point. Enables 5V brain to send signals to 12V muscles without frying circuitry.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* Power & Safety */}
       <section className="section-spacing relative">
         <div className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/5 to-transparent" />
@@ -280,19 +425,27 @@ const Index = () => {
           </div>
           <div className="sr space-y-4">
             {[
-              "The JARVIS Manifesto — Engineering philosophy & system design",
-              "The JARVIS Compendium — Complete reference encyclopedia",
-              "Fabrication Guide — Physical build manual",
-              "Print Manual — Step-by-step build, wiring & code",
-              "The Complete Archive — Master 131-page reference",
+              { name: "The JARVIS Manifesto", desc: "Engineering philosophy & system design", file: "THE_JARVIS_MANIFESTO.docx" },
+              { name: "The JARVIS Compendium", desc: "Complete reference encyclopedia", file: "THE_JARVIS_COMPENDIUM.docx" },
+              { name: "Fabrication Guide", desc: "Physical build manual", file: "JARVIS_FABRICATION_GUIDE.docx" },
+              { name: "Print Manual", desc: "Step-by-step build, wiring & code", file: "JARVIS_PRINT_MANUAL.docx" },
+              { name: "The Complete Archive", desc: "Master 131-page reference", file: "THE_COMPLETE_ARCHIVE.docx" },
             ].map((doc) => (
-              <div key={doc} className="glass-panel glow-border p-5 flex items-center justify-between hover:border-primary/30 transition-all">
+              <a
+                key={doc.file}
+                href={`/docs/${doc.file}`}
+                download
+                className="glass-panel glow-border p-5 flex items-center justify-between hover:border-primary/30 transition-all group block"
+              >
                 <div className="flex items-center gap-4">
                   <FileText className="w-5 h-5 text-primary flex-shrink-0" />
-                  <span className="text-sm font-medium">{doc}</span>
+                  <div>
+                    <span className="text-sm font-medium">{doc.name}</span>
+                    <p className="text-xs text-muted-foreground">{doc.desc}</p>
+                  </div>
                 </div>
-                <span className="text-xs text-muted-foreground italic whitespace-nowrap ml-4">Content will be added</span>
-              </div>
+                <Download className="w-4 h-4 text-muted-foreground group-hover:text-primary transition-colors flex-shrink-0 ml-4" />
+              </a>
             ))}
           </div>
         </div>
