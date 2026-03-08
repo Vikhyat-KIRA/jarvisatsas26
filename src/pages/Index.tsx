@@ -945,6 +945,8 @@ function BuildTimeline() {
 }
 
 /* ─── QR Code Section ─── */
+import qrCodeImage from "@/assets/qr-code.png";
+
 function QRSection() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
@@ -954,17 +956,16 @@ function QRSection() {
       <div ref={ref} className="max-w-3xl mx-auto px-6 lg:px-10 text-center">
         <motion.div initial={{ opacity: 0, y: 25 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.15 }} className="glass-card glow-border p-10 sm:p-14 inline-block">
           <p className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-6">Scan to Explore</p>
-          {/* QR code using a public API */}
           <div className="bg-white rounded-2xl p-4 inline-block mb-6">
             <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.origin)}&bgcolor=ffffff&color=000000`}
-              alt="QR code to this website"
-              className="w-[200px] h-[200px]"
+              src={qrCodeImage}
+              alt="QR code - Take A Memory"
+              className="w-[220px] h-[220px] object-contain"
               loading="lazy"
             />
           </div>
-          <p className="font-display font-semibold text-sm text-foreground mb-1">Take JARVIS Home</p>
-          <p className="text-[12px] text-muted-foreground">Scan this code to open the Project JARVIS website on your phone.</p>
+          <p className="font-display italic text-xl text-foreground mb-1">Take A Memory</p>
+          <p className="text-[12px] text-muted-foreground">Scan this code to take JARVIS home with you.</p>
         </motion.div>
       </div>
     </Section>
