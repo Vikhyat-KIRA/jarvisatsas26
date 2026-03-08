@@ -11,6 +11,58 @@ import boardPico from "@/assets/board-pico.png";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
+/* ─── CUSTOMIZABLE CONFIG ─── */
+const EXHIBITION_DATE = "2025-09-16T09:00:00"; // Change this to your exhibition date/time
+const EXHIBITION_TITLE = "September 16th, 2025";
+const EXHIBITION_VENUE = "St. Anthony's School";
+
+/* ─── Floating Circuit Particles ─── */
+const circuitSymbols = ["⊕", "◈", "◇", "△", "□", "○", "⬡", "⊡", "⊞", "⊠"];
+
+function FloatingParticles() {
+  const particles = Array.from({ length: 24 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 8 + 6,
+    duration: Math.random() * 15 + 15,
+    delay: Math.random() * 10,
+    symbol: circuitSymbols[i % circuitSymbols.length],
+    opacity: Math.random() * 0.12 + 0.03,
+  }));
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map((p) => (
+        <motion.span
+          key={p.id}
+          className="absolute text-jarvis-cyan select-none"
+          style={{ left: `${p.x}%`, top: `${p.y}%`, fontSize: `${p.size}px`, opacity: p.opacity }}
+          animate={{
+            y: [0, -40, 10, -20, 0],
+            x: [0, 15, -10, 5, 0],
+            rotate: [0, 90, 180, 270, 360],
+            opacity: [p.opacity, p.opacity * 2, p.opacity, p.opacity * 1.5, p.opacity],
+          }}
+          transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: "linear" }}
+        >
+          {p.symbol}
+        </motion.span>
+      ))}
+      {/* Circuit trace lines */}
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={`trace-${i}`}
+          className="absolute h-px bg-gradient-to-r from-transparent via-jarvis-cyan/10 to-transparent"
+          style={{ top: `${25 + i * 25}%`, left: 0, right: 0 }}
+          animate={{ opacity: [0.02, 0.08, 0.02], scaleX: [0.8, 1, 0.8] }}
+          transition={{ duration: 8 + i * 2, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
+    </div>
+  );
+}
+
 /* ─── Navigation ─── */
 const navLinks = [
   { label: "Vision", href: "#vision" },
@@ -93,6 +145,9 @@ function Hero() {
 
   return (
     <section ref={ref} className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Floating circuit particles */}
+      <FloatingParticles />
+
       {/* Grid background */}
       <div className="absolute inset-0 opacity-[0.035]" style={{
         backgroundImage: "linear-gradient(rgba(0,229,255,0.4) 1px, transparent 1px), linear-gradient(90deg, rgba(0,229,255,0.4) 1px, transparent 1px)",
@@ -161,8 +216,11 @@ function Vision() {
         </motion.p>
         <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12, ease }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground leading-[1.2] tracking-wide">
           Bio-Inspired.{" "}
-          <span className="bg-gradient-to-r from-jarvis-cyan via-jarvis-blue to-jarvis-cyan bg-clip-text text-transparent">Engineered.</span>
+          <span className="italic bg-gradient-to-r from-jarvis-cyan via-jarvis-blue to-jarvis-cyan bg-clip-text text-transparent">Engineered.</span>
         </motion.h2>
+        <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.2 }} className="font-display italic text-base text-foreground/40 mt-4">
+          where intelligence meets intention
+        </motion.p>
         <motion.div initial={{ opacity: 0, y: 25 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.3, ease }} className="mt-10 space-y-6 text-muted-foreground text-[15px] leading-[1.9]">
           <p>Most humanoid robots fail because they prioritize acrobatics over intelligence — wasting computational power trying to balance on two legs. JARVIS operates on a different philosophy: by utilizing a geometrically perfect mechanical base, we free up 100% of CPU power for true Artificial Intelligence, computer vision, and social interaction.</p>
           <p>JARVIS is a generative, contextual android. He does not use pre-recorded lines. Powered by the Gemini AI API, OpenCV face tracking, and a multi-board distributed architecture, he sees, listens, thinks, and speaks in real time.</p>
@@ -247,7 +305,7 @@ function Architecture() {
           Multi-Core Brain
         </motion.p>
         <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide">
-          4-Board Architecture
+          4-Board <span className="italic text-jarvis-cyan">Architecture</span>
         </motion.h2>
         <motion.p initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.25 }} className="mt-6 text-muted-foreground text-[15px] max-w-2xl leading-[1.8]">
           Tasks are distributed across four dedicated logic boards via a centralized USB bus using star topology. No single chip is bottlenecked.
@@ -489,9 +547,10 @@ function TechShowcase() {
         <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5">
           Systems
         </motion.p>
-        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-14">
-          Component Breakdown
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-3">
+          Component <span className="italic text-jarvis-cyan">Breakdown</span>
         </motion.h2>
+        <p className="font-display italic text-base text-foreground/40 mb-14">every part has a purpose</p>
 
         {/* Subsystem tabs */}
         <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.2 }} className="flex flex-wrap gap-2 mb-10">
@@ -707,7 +766,7 @@ function Footer() {
 function Countdown() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
-  const target = new Date("2025-09-16T09:00:00").getTime();
+  const target = new Date(EXHIBITION_DATE).getTime();
 
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
@@ -735,11 +794,14 @@ function Countdown() {
         <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5">
           Exhibition Day
         </motion.p>
-        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-4">
-          September 16th, 2025
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-2">
+          {EXHIBITION_TITLE}
         </motion.h2>
+        <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.2 }} className="font-display italic text-lg text-foreground/60 mb-2">
+          the moment everything comes alive
+        </motion.p>
         <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.25 }} className="text-muted-foreground text-[15px] mb-12">
-          St. Anthony's School · JARVIS goes live.
+          {EXHIBITION_VENUE} · JARVIS goes live.
         </motion.p>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.3 }} className="flex justify-center gap-4 sm:gap-6">
