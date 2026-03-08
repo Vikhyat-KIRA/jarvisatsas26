@@ -703,7 +703,7 @@ const Index = () => (
     <Architecture />
     <WiringDiagram />
     <BuildProcess />
-    <Gallery />
+    <TechShowcase />
     <Documentation />
     <Team />
     <Footer />
