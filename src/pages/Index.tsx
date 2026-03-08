@@ -994,12 +994,12 @@ function Countdown() {
 
 /* ─── Build Timeline ─── */
 const timeline = [
-  { phase: "Concept", date: "Jan 2025", desc: "Initial design philosophy drafted. Multi-board architecture conceived.", icon: "💡" },
-  { phase: "Prototyping", date: "Feb–Mar 2025", desc: "Chassis engineering, 6-point tripod base, BO motor drive system testing.", icon: "🔧" },
-  { phase: "Electronics", date: "Apr–May 2025", desc: "4-board integration, USB star topology, dual-juice power isolation.", icon: "⚡" },
-  { phase: "Software", date: "Jun–Jul 2025", desc: "Gemini AI API, OpenCV face tracking, STT/TTS pipeline, NeoPixel animations.", icon: "🧠" },
-  { phase: "Assembly", date: "Aug 2025", desc: "Final build, paint, cable management, exhibition prep and polish.", icon: "🎨" },
-  { phase: "Exhibition", date: "Sep 16, 2025", desc: "JARVIS goes live at St. Anthony's School.", icon: "🚀" },
+  { phase: "Concept", date: "Jan 2026", desc: "Initial design philosophy drafted. Multi-board architecture conceived.", icon: "💡" },
+  { phase: "Prototyping", date: "Feb–Mar 2026", desc: "Chassis engineering, 6-point tripod base, BO motor drive system testing.", icon: "🔧" },
+  { phase: "Electronics", date: "Apr–May 2026", desc: "4-board integration, USB star topology, dual-juice power isolation.", icon: "⚡" },
+  { phase: "Software", date: "Jun–Jul 2026", desc: "Gemini AI API, OpenCV face tracking, STT/TTS pipeline, NeoPixel animations.", icon: "🧠" },
+  { phase: "Assembly", date: "Aug 2026", desc: "Final build, paint, cable management, exhibition prep and polish.", icon: "🎨" },
+  { phase: "Exhibition", date: "Sep 16, 2026", desc: "JARVIS goes live at St. Anthony's School.", icon: "🚀" },
 ];
 
 function BuildTimeline() {
