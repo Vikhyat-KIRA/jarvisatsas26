@@ -183,6 +183,9 @@ function Nav() {
                 {l.label}
               </motion.button>
             ))}
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: navLinks.length * 0.06, ease }} className="mt-4">
+              <ArcReactorToggle />
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
