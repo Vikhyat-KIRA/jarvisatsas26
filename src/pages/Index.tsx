@@ -216,8 +216,11 @@ function Vision() {
         </motion.p>
         <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12, ease }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground leading-[1.2] tracking-wide">
           Bio-Inspired.{" "}
-          <span className="bg-gradient-to-r from-jarvis-cyan via-jarvis-blue to-jarvis-cyan bg-clip-text text-transparent">Engineered.</span>
+          <span className="italic bg-gradient-to-r from-jarvis-cyan via-jarvis-blue to-jarvis-cyan bg-clip-text text-transparent">Engineered.</span>
         </motion.h2>
+        <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.2 }} className="font-display italic text-base text-foreground/40 mt-4">
+          where intelligence meets intention
+        </motion.p>
         <motion.div initial={{ opacity: 0, y: 25 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.3, ease }} className="mt-10 space-y-6 text-muted-foreground text-[15px] leading-[1.9]">
           <p>Most humanoid robots fail because they prioritize acrobatics over intelligence — wasting computational power trying to balance on two legs. JARVIS operates on a different philosophy: by utilizing a geometrically perfect mechanical base, we free up 100% of CPU power for true Artificial Intelligence, computer vision, and social interaction.</p>
           <p>JARVIS is a generative, contextual android. He does not use pre-recorded lines. Powered by the Gemini AI API, OpenCV face tracking, and a multi-board distributed architecture, he sees, listens, thinks, and speaks in real time.</p>
