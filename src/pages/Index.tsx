@@ -8,6 +8,7 @@ import boardRaspi from "@/assets/board-raspi.png";
 import boardArduino from "@/assets/board-arduino.png";
 import boardUno from "@/assets/board-uno.png";
 import boardPico from "@/assets/board-pico.png";
+import qrCodeImage from "@/assets/qr-code.png";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
@@ -766,13 +767,31 @@ function Footer() {
 function Countdown() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
-  const target = new Date(EXHIBITION_DATE).getTime();
 
+  const [editing, setEditing] = useState(false);
+  const [dateStr, setDateStr] = useState(() => localStorage.getItem("jarvis_exhibition_date") || EXHIBITION_DATE);
+  const [title, setTitle] = useState(() => localStorage.getItem("jarvis_exhibition_title") || EXHIBITION_TITLE);
+  const [venue, setVenue] = useState(() => localStorage.getItem("jarvis_exhibition_venue") || EXHIBITION_VENUE);
+  const [tempDate, setTempDate] = useState(dateStr);
+  const [tempTitle, setTempTitle] = useState(title);
+  const [tempVenue, setTempVenue] = useState(venue);
+
+  const target = new Date(dateStr).getTime();
   const [now, setNow] = useState(Date.now());
   useEffect(() => {
     const t = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(t);
   }, []);
+
+  const saveSettings = () => {
+    setDateStr(tempDate);
+    setTitle(tempTitle);
+    setVenue(tempVenue);
+    localStorage.setItem("jarvis_exhibition_date", tempDate);
+    localStorage.setItem("jarvis_exhibition_title", tempTitle);
+    localStorage.setItem("jarvis_exhibition_venue", tempVenue);
+    setEditing(false);
+  };
 
   const diff = Math.max(0, target - now);
   const days = Math.floor(diff / 86400000);
@@ -795,14 +814,59 @@ function Countdown() {
           Exhibition Day
         </motion.p>
         <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-2">
-          {EXHIBITION_TITLE}
+          {title}
         </motion.h2>
         <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.2 }} className="font-display italic text-lg text-foreground/60 mb-2">
           the moment everything comes alive
         </motion.p>
-        <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.25 }} className="text-muted-foreground text-[15px] mb-12">
-          {EXHIBITION_VENUE} · JARVIS goes live.
+        <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.25 }} className="text-muted-foreground text-[15px] mb-8">
+          {venue} · JARVIS goes live.
         </motion.p>
+
+        {/* Edit button */}
+        <motion.button
+          initial={{ opacity: 0 }}
+          animate={inView ? { opacity: 1 } : {}}
+          transition={{ delay: 0.3 }}
+          onClick={() => { setTempDate(dateStr); setTempTitle(title); setTempVenue(venue); setEditing(!editing); }}
+          className="mb-8 px-4 py-2 text-[10px] tracking-[0.2em] uppercase border border-jarvis-cyan/30 text-jarvis-cyan rounded-lg hover:bg-jarvis-cyan/10 transition-all duration-300"
+        >
+          {editing ? "Cancel" : "⚙ Customize Timer"}
+        </motion.button>
+
+        {/* Settings panel */}
+        <AnimatePresence>
+          {editing && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden mb-8"
+            >
+              <div className="glass-card glow-border p-6 max-w-md mx-auto space-y-4 text-left">
+                <div>
+                  <label className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground block mb-1">Event Date & Time</label>
+                  <input type="datetime-local" value={tempDate} onChange={(e) => setTempDate(e.target.value)}
+                    className="w-full bg-background border border-border/50 rounded-lg px-3 py-2 text-sm text-foreground focus:border-jarvis-cyan/50 focus:outline-none transition-colors" />
+                </div>
+                <div>
+                  <label className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground block mb-1">Display Title</label>
+                  <input type="text" value={tempTitle} onChange={(e) => setTempTitle(e.target.value)}
+                    className="w-full bg-background border border-border/50 rounded-lg px-3 py-2 text-sm text-foreground focus:border-jarvis-cyan/50 focus:outline-none transition-colors" />
+                </div>
+                <div>
+                  <label className="text-[10px] tracking-[0.2em] uppercase text-muted-foreground block mb-1">Venue</label>
+                  <input type="text" value={tempVenue} onChange={(e) => setTempVenue(e.target.value)}
+                    className="w-full bg-background border border-border/50 rounded-lg px-3 py-2 text-sm text-foreground focus:border-jarvis-cyan/50 focus:outline-none transition-colors" />
+                </div>
+                <button onClick={saveSettings}
+                  className="w-full py-2.5 bg-jarvis-cyan/20 border border-jarvis-cyan/40 text-jarvis-cyan font-semibold rounded-lg hover:bg-jarvis-cyan/30 transition-all duration-300 text-sm">
+                  Save Settings
+                </button>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
 
         <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.3 }} className="flex justify-center gap-4 sm:gap-6">
           {units.map((u) => (
@@ -882,6 +946,7 @@ function BuildTimeline() {
 }
 
 /* ─── QR Code Section ─── */
+
 function QRSection() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
@@ -891,17 +956,16 @@ function QRSection() {
       <div ref={ref} className="max-w-3xl mx-auto px-6 lg:px-10 text-center">
         <motion.div initial={{ opacity: 0, y: 25 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.15 }} className="glass-card glow-border p-10 sm:p-14 inline-block">
           <p className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-6">Scan to Explore</p>
-          {/* QR code using a public API */}
           <div className="bg-white rounded-2xl p-4 inline-block mb-6">
             <img
-              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.origin)}&bgcolor=ffffff&color=000000`}
-              alt="QR code to this website"
-              className="w-[200px] h-[200px]"
+              src={qrCodeImage}
+              alt="QR code - Take A Memory"
+              className="w-[220px] h-[220px] object-contain"
               loading="lazy"
             />
           </div>
-          <p className="font-display font-semibold text-sm text-foreground mb-1">Take JARVIS Home</p>
-          <p className="text-[12px] text-muted-foreground">Scan this code to open the Project JARVIS website on your phone.</p>
+          <p className="font-display italic text-xl text-foreground mb-1">Take A Memory</p>
+          <p className="text-[12px] text-muted-foreground">Scan this code to take JARVIS home with you.</p>
         </motion.div>
       </div>
     </Section>
