@@ -469,7 +469,7 @@ const subsystems = [
       { key: "Location", val: "Chest Arc Reactor" },
     ],
     desc: "The Artist drives the NeoPixel arc reactor — blue when listening, gold when thinking, white when speaking. Pure visual personality.",
-    img: jarvisDetail,
+    img: boardPico,
   },
 ];
 
