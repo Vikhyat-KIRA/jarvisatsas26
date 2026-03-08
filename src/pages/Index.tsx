@@ -11,6 +11,58 @@ import boardPico from "@/assets/board-pico.png";
 
 const ease = [0.22, 1, 0.36, 1] as const;
 
+/* ─── CUSTOMIZABLE CONFIG ─── */
+const EXHIBITION_DATE = "2025-09-16T09:00:00"; // Change this to your exhibition date/time
+const EXHIBITION_TITLE = "September 16th, 2025";
+const EXHIBITION_VENUE = "St. Anthony's School";
+
+/* ─── Floating Circuit Particles ─── */
+const circuitSymbols = ["⊕", "◈", "◇", "△", "□", "○", "⬡", "⊡", "⊞", "⊠"];
+
+function FloatingParticles() {
+  const particles = Array.from({ length: 24 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 8 + 6,
+    duration: Math.random() * 15 + 15,
+    delay: Math.random() * 10,
+    symbol: circuitSymbols[i % circuitSymbols.length],
+    opacity: Math.random() * 0.12 + 0.03,
+  }));
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map((p) => (
+        <motion.span
+          key={p.id}
+          className="absolute text-jarvis-cyan select-none"
+          style={{ left: `${p.x}%`, top: `${p.y}%`, fontSize: `${p.size}px`, opacity: p.opacity }}
+          animate={{
+            y: [0, -40, 10, -20, 0],
+            x: [0, 15, -10, 5, 0],
+            rotate: [0, 90, 180, 270, 360],
+            opacity: [p.opacity, p.opacity * 2, p.opacity, p.opacity * 1.5, p.opacity],
+          }}
+          transition={{ duration: p.duration, delay: p.delay, repeat: Infinity, ease: "linear" }}
+        >
+          {p.symbol}
+        </motion.span>
+      ))}
+      {/* Circuit trace lines */}
+      {[0, 1, 2].map((i) => (
+        <motion.div
+          key={`trace-${i}`}
+          className="absolute h-px bg-gradient-to-r from-transparent via-jarvis-cyan/10 to-transparent"
+          style={{ top: `${25 + i * 25}%`, left: 0, right: 0 }}
+          animate={{ opacity: [0.02, 0.08, 0.02], scaleX: [0.8, 1, 0.8] }}
+          transition={{ duration: 8 + i * 2, repeat: Infinity, ease: "easeInOut" }}
+        />
+      ))}
+    </div>
+  );
+}
+
 /* ─── Navigation ─── */
 const navLinks = [
   { label: "Vision", href: "#vision" },
