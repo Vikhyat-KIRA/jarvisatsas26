@@ -413,39 +413,171 @@ function BuildProcess() {
   );
 }
 
-/* ─── Gallery ─── */
-function Gallery() {
+/* ─── Interactive Tech Showcase ─── */
+const subsystems = [
+  {
+    id: "brain",
+    label: "AI Brain",
+    icon: "🧠",
+    color: "jarvis-cyan",
+    specs: [
+      { key: "Processor", val: "Raspberry Pi 3B+" },
+      { key: "AI Engine", val: "Gemini API" },
+      { key: "Vision", val: "OpenCV + USB Cam" },
+      { key: "Audio", val: "STT/TTS Pipeline" },
+    ],
+    desc: "The Master node runs Linux, handling all AI inference, computer vision, speech processing, and high-level decision making in real time.",
+    img: jarvisCloseup,
+  },
+  {
+    id: "motor",
+    label: "Motor Control",
+    icon: "⚡",
+    color: "jarvis-blue",
+    specs: [
+      { key: "Controller", val: "Arduino Mega" },
+      { key: "Driver", val: "L298N H-Bridge" },
+      { key: "Motors", val: "2× BO Geared" },
+      { key: "Safety", val: "30cm Kill Zone" },
+    ],
+    desc: "The Muscle handles real-time motor control with a hardware safety override — if an obstacle is within 30cm, it ignores AI commands entirely.",
+    img: jarvisHero,
+  },
+  {
+    id: "sensors",
+    label: "Sensor Array",
+    icon: "📡",
+    color: "jarvis-purple",
+    specs: [
+      { key: "Controller", val: "Arduino Uno" },
+      { key: "Range Sensor", val: "HC-SR04 Ultrasonic" },
+      { key: "Detection", val: "1m Perimeter" },
+      { key: "Power", val: "~50mA Ultra-Low" },
+    ],
+    desc: "The Bouncer runs an ultra-low-power detection loop, waking the entire system when a human enters the 1-meter perimeter zone.",
+    img: jarvisShowcase,
+  },
+  {
+    id: "leds",
+    label: "LED System",
+    icon: "💡",
+    color: "jarvis-cyan",
+    specs: [
+      { key: "Controller", val: "Raspberry Pi Pico" },
+      { key: "LEDs", val: "NeoPixel Ring" },
+      { key: "Modes", val: "Blue · Gold · White" },
+      { key: "Location", val: "Chest Arc Reactor" },
+    ],
+    desc: "The Artist drives the NeoPixel arc reactor — blue when listening, gold when thinking, white when speaking. Pure visual personality.",
+    img: jarvisDetail,
+  },
+];
+
+function TechShowcase() {
   const ref = useRef<HTMLDivElement>(null);
   const inView = useInView(ref, { once: true, margin: "-80px" });
-  const images = [
-    { src: jarvisHero, alt: "JARVIS full body" },
-    { src: jarvisShowcase, alt: "JARVIS 3/4 angle" },
-    { src: jarvisCloseup, alt: "JARVIS head closeup" },
-    { src: jarvisDetail, alt: "JARVIS hand detail" },
-    { src: boardRaspi, alt: "Raspberry Pi 3B+" },
-    { src: boardUno, alt: "Arduino Uno" },
-    { src: boardArduino, alt: "Arduino Mega" },
-    { src: boardPico, alt: "Pi Pico" },
-  ];
+  const [active, setActive] = useState(0);
+  const current = subsystems[active];
 
   return (
     <Section id="gallery">
-      <div ref={ref} className="max-w-5xl mx-auto px-6 lg:px-10">
+      <div className="absolute top-1/3 left-0 w-[500px] h-[500px] rounded-full bg-jarvis-cyan/[0.02] blur-[200px] pointer-events-none" />
+      <div ref={ref} className="max-w-6xl mx-auto px-6 lg:px-10">
         <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5">
-          Gallery
+          Systems
         </motion.p>
         <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-14">
-          Visual Showcase
+          Component Breakdown
         </motion.h2>
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-          {images.map((img, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.6, delay: 0.2 + i * 0.07, ease }}
-              className="glass-card glow-border overflow-hidden aspect-square group"
+
+        {/* Subsystem tabs */}
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.2 }} className="flex flex-wrap gap-2 mb-10">
+          {subsystems.map((s, i) => (
+            <button
+              key={s.id}
+              onClick={() => setActive(i)}
+              className={`flex items-center gap-2 px-5 py-3 rounded-xl text-[12px] font-semibold tracking-wider uppercase transition-all duration-500 border ${
+                active === i
+                  ? "bg-jarvis-cyan/10 border-jarvis-cyan/40 text-jarvis-cyan glow-border"
+                  : "border-border/50 text-muted-foreground hover:border-jarvis-cyan/20 hover:text-foreground"
+              }`}
             >
-              <img src={img.src} alt={img.alt} className="w-full h-full object-contain p-3 group-hover:scale-105 transition-transform duration-700" />
-            </motion.div>
+              <span className="text-base">{s.icon}</span>
+              {s.label}
+            </button>
           ))}
-        </div>
+        </motion.div>
+
+        {/* Content */}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={current.id}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.5, ease }}
+            className="grid lg:grid-cols-2 gap-8 items-center"
+          >
+            {/* Image */}
+            <div className="glass-card glow-border p-8 flex items-center justify-center aspect-square lg:aspect-auto lg:h-[420px]">
+              <motion.img
+                src={current.img}
+                alt={current.label}
+                initial={{ scale: 0.9, opacity: 0 }}
+                animate={{ scale: 1, opacity: 1 }}
+                transition={{ duration: 0.6, ease }}
+                className="max-h-full max-w-full object-contain drop-shadow-[0_0_60px_rgba(0,229,255,0.15)]"
+              />
+            </div>
+
+            {/* Info */}
+            <div className="space-y-6">
+              <div>
+                <h3 className="font-display font-bold text-xl text-foreground flex items-center gap-3">
+                  <span className="text-2xl">{current.icon}</span>
+                  {current.label}
+                </h3>
+                <p className="text-[13px] text-muted-foreground leading-[1.8] mt-3">{current.desc}</p>
+              </div>
+
+              {/* Spec grid */}
+              <div className="grid grid-cols-2 gap-3">
+                {current.specs.map((spec, i) => (
+                  <motion.div
+                    key={spec.key}
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.4, delay: i * 0.08 }}
+                    className="rounded-xl border border-border/50 bg-secondary/30 p-4"
+                  >
+                    <p className="text-[9px] tracking-[0.25em] uppercase text-muted-foreground">{spec.key}</p>
+                    <p className="text-sm font-semibold text-jarvis-cyan mt-1">{spec.val}</p>
+                  </motion.div>
+                ))}
+              </div>
+
+              {/* Data flow indicator */}
+              <div className="rounded-xl border border-border/30 bg-card/30 p-4">
+                <div className="flex items-center gap-3">
+                  <div className="flex gap-1">
+                    {[0, 1, 2, 3, 4].map((j) => (
+                      <motion.div
+                        key={j}
+                        className="w-1.5 h-6 rounded-full bg-jarvis-cyan/30"
+                        animate={{ opacity: [0.2, 1, 0.2] }}
+                        transition={{ duration: 1.2, delay: j * 0.15, repeat: Infinity }}
+                      />
+                    ))}
+                  </div>
+                  <div>
+                    <p className="text-[10px] tracking-wider uppercase text-muted-foreground">Data Flow Active</p>
+                    <p className="text-[11px] text-jarvis-cyan font-mono">USB Bus → Star Topology</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </AnimatePresence>
       </div>
     </Section>
   );
