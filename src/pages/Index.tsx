@@ -7,7 +7,7 @@ import boardRaspi from "@/assets/board-raspi.png";
 import boardArduino from "@/assets/board-arduino.png";
 import boardUno from "@/assets/board-uno.png";
 import boardPico from "@/assets/board-pico.png";
-import { Cpu, CircuitBoard, Microchip, Zap, FileText, Users, Eye, Wrench, Image, Shield, Radio, Battery } from "lucide-react";
+import { Cpu, CircuitBoard, Microchip, Zap, FileText, Users, Eye, Wrench, Image, Shield, Radio, Battery, Download, Cable } from "lucide-react";
 
 function useScrollReveal() {
   const ref = useRef<HTMLDivElement>(null);
