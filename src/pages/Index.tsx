@@ -1081,11 +1081,104 @@ function QRSection() {
   );
 }
 
+/* ─── Boot Sequence ─── */
+const bootLines = [
+  { text: "INITIALIZING JARVIS...", delay: 0 },
+  { text: "LOADING NEURAL PATHWAYS...", delay: 600 },
+  { text: "CALIBRATING SENSORS...", delay: 1200 },
+  { text: "ESTABLISHING COMMS...", delay: 1800 },
+  { text: "BOOTING SYSTEM...", delay: 2400 },
+  { text: "ACCESS GRANTED", delay: 3200, highlight: true },
+];
+
+function BootSequence({ onComplete }: { onComplete: () => void }) {
+  const [visibleLines, setVisibleLines] = useState<number>(0);
+  const [done, setDone] = useState(false);
+
+  useEffect(() => {
+    const timers = bootLines.map((line, i) =>
+      setTimeout(() => setVisibleLines(i + 1), line.delay)
+    );
+    const endTimer = setTimeout(() => setDone(true), 4000);
+    const exitTimer = setTimeout(onComplete, 4800);
+    return () => {
+      timers.forEach(clearTimeout);
+      clearTimeout(endTimer);
+      clearTimeout(exitTimer);
+    };
+  }, [onComplete]);
+
+  return (
+    <motion.div
+      className="fixed inset-0 z-[9999] bg-background flex items-center justify-center"
+      animate={done ? { opacity: 0 } : { opacity: 1 }}
+      transition={{ duration: 0.8, ease }}
+    >
+      {/* Scanline effect */}
+      <div className="absolute inset-0 overflow-hidden pointer-events-none">
+        <motion.div
+          className="absolute left-0 right-0 h-px bg-jarvis-cyan/20"
+          animate={{ top: ["-5%", "105%"] }}
+          transition={{ duration: 2.5, repeat: Infinity, ease: "linear" }}
+        />
+      </div>
+
+      {/* Grid background */}
+      <div className="absolute inset-0 opacity-[0.03]" style={{
+        backgroundImage: "linear-gradient(hsl(var(--jarvis-cyan)) 1px, transparent 1px), linear-gradient(90deg, hsl(var(--jarvis-cyan)) 1px, transparent 1px)",
+        backgroundSize: "40px 40px",
+      }} />
+
+      <div className="relative font-mono text-sm sm:text-base space-y-3 px-8 max-w-lg w-full">
+        {bootLines.slice(0, visibleLines).map((line, i) => (
+          <motion.div
+            key={i}
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ duration: 0.3 }}
+            className={`flex items-center gap-3 ${
+              line.highlight
+                ? "text-jarvis-cyan font-bold text-lg sm:text-xl tracking-[0.3em]"
+                : "text-muted-foreground"
+            }`}
+          >
+            <span className={`inline-block w-1.5 h-1.5 rounded-full flex-shrink-0 ${
+              line.highlight ? "bg-jarvis-cyan glow-dot" : "bg-muted-foreground/50"
+            }`} />
+            {line.text}
+            {i === visibleLines - 1 && !line.highlight && (
+              <motion.span
+                className="inline-block w-2 h-4 bg-jarvis-cyan/70 ml-1"
+                animate={{ opacity: [1, 0] }}
+                transition={{ duration: 0.5, repeat: Infinity }}
+              />
+            )}
+          </motion.div>
+        ))}
+
+        {/* Progress bar */}
+        <div className="mt-6 h-px bg-border/30 rounded-full overflow-hidden">
+          <motion.div
+            className="h-full bg-gradient-to-r from-jarvis-cyan/60 to-jarvis-blue/60"
+            initial={{ width: "0%" }}
+            animate={{ width: done ? "100%" : `${(visibleLines / bootLines.length) * 90}%` }}
+            transition={{ duration: 0.5, ease }}
+          />
+        </div>
+      </div>
+    </motion.div>
+  );
+}
+
 /* ─── Main Page ─── */
-const Index = () => (
-  <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
-    <Nav />
-    <Hero />
+const Index = () => {
+  const [booted, setBooted] = useState(false);
+
+  return (
+    <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+      <AnimatePresence>{!booted && <BootSequence onComplete={() => setBooted(true)} />}</AnimatePresence>
+      <Nav />
+      <Hero />
     <Vision />
     <MeetJarvis />
     <Architecture />
@@ -1098,7 +1191,8 @@ const Index = () => (
     <QRSection />
     <Team />
     <Footer />
-  </div>
-);
+    </div>
+  );
+};
 
 export default Index;
