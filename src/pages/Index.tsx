@@ -64,6 +64,59 @@ function FloatingParticles() {
   );
 }
 
+/* ─── Arc Reactor Theme Toggle ─── */
+function ArcReactorToggle() {
+  const [isDark, setIsDark] = useState(true);
+
+  const toggle = () => {
+    const next = !isDark;
+    setIsDark(next);
+    document.documentElement.classList.toggle("light", !next);
+  };
+
+  return (
+    <button
+      onClick={toggle}
+      className="relative w-8 h-8 rounded-full flex items-center justify-center group transition-all duration-300"
+      aria-label="Toggle theme"
+      title={isDark ? "Switch to light mode" : "Switch to dark mode"}
+    >
+      {/* Outer ring */}
+      <motion.div
+        className="absolute inset-0 rounded-full border border-jarvis-cyan/30 group-hover:border-jarvis-cyan/60 transition-colors duration-300"
+        animate={isDark ? { rotate: 360 } : { rotate: 0 }}
+        transition={{ duration: 8, repeat: Infinity, ease: "linear" }}
+      />
+      {/* Core glow */}
+      <motion.div
+        className="w-3.5 h-3.5 rounded-full transition-all duration-500"
+        style={{
+          background: isDark
+            ? "radial-gradient(circle, hsl(var(--jarvis-cyan)), hsl(var(--jarvis-cyan) / 0.3))"
+            : "radial-gradient(circle, hsl(40 95% 55%), hsl(40 90% 45% / 0.3))",
+          boxShadow: isDark
+            ? "0 0 8px hsl(var(--jarvis-cyan) / 0.6), 0 0 20px hsl(var(--jarvis-cyan) / 0.2)"
+            : "0 0 8px hsl(40 95% 55% / 0.6), 0 0 20px hsl(40 90% 45% / 0.2)",
+        }}
+        animate={{ scale: [1, 1.15, 1], opacity: [0.9, 1, 0.9] }}
+        transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+      />
+      {/* Triangle notches */}
+      {[0, 90, 180, 270].map((deg) => (
+        <div
+          key={deg}
+          className="absolute w-[3px] h-[3px] bg-jarvis-cyan/40 rounded-full"
+          style={{
+            top: "50%",
+            left: "50%",
+            transform: `rotate(${deg}deg) translate(12px) translate(-50%, -50%)`,
+          }}
+        />
+      ))}
+    </button>
+  );
+}
+
 /* ─── Navigation ─── */
 const navLinks = [
   { label: "Vision", href: "#vision" },
@@ -113,6 +166,7 @@ function Nav() {
             {navLinks.map((l) => (
               <button key={l.href} onClick={() => go(l.href)} className="text-[11px] tracking-[0.2em] uppercase text-muted-foreground hover:text-jarvis-cyan transition-colors duration-300">{l.label}</button>
             ))}
+            <ArcReactorToggle />
           </div>
           <button onClick={() => setMobileOpen(!mobileOpen)} className="md:hidden w-8 h-8 flex flex-col items-center justify-center gap-1.5">
             <span className={`block w-5 h-px bg-foreground transition-all duration-300 ${mobileOpen ? "rotate-45 translate-y-[3.5px]" : ""}`} />

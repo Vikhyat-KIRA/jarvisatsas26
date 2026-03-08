@@ -50,6 +50,52 @@
     --sidebar-accent-foreground: 240 10% 85%;
     --sidebar-border: 240 40% 15%;
     --sidebar-ring: 187 100% 50%;
+
+    transition: background-color 0.6s ease, color 0.6s ease;
+  }
+
+  .light {
+    --background: 210 30% 96%;
+    --foreground: 230 20% 15%;
+
+    --card: 210 25% 92%;
+    --card-foreground: 230 20% 15%;
+
+    --popover: 210 25% 92%;
+    --popover-foreground: 230 20% 15%;
+
+    --primary: 187 80% 40%;
+    --primary-foreground: 0 0% 100%;
+
+    --secondary: 210 20% 85%;
+    --secondary-foreground: 230 20% 20%;
+
+    --muted: 210 15% 88%;
+    --muted-foreground: 230 10% 45%;
+
+    --accent: 235 80% 55%;
+    --accent-foreground: 0 0% 100%;
+
+    --destructive: 0 72% 50%;
+    --destructive-foreground: 0 0% 100%;
+
+    --border: 210 20% 82%;
+    --input: 210 20% 82%;
+    --ring: 187 80% 40%;
+
+    --jarvis-cyan: 187 80% 40%;
+    --jarvis-blue: 234 80% 48%;
+    --jarvis-purple: 262 70% 50%;
+    --jarvis-glow: 187 80% 40%;
+
+    --sidebar-background: 210 25% 94%;
+    --sidebar-foreground: 230 20% 15%;
+    --sidebar-primary: 187 80% 40%;
+    --sidebar-primary-foreground: 0 0% 100%;
+    --sidebar-accent: 210 20% 85%;
+    --sidebar-accent-foreground: 230 20% 20%;
+    --sidebar-border: 210 20% 82%;
+    --sidebar-ring: 187 80% 40%;
   }
 }
 
@@ -62,6 +108,11 @@
     @apply bg-background text-foreground font-body antialiased;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    transition: background-color 0.6s ease, color 0.6s ease;
+  }
+
+  * {
+    transition: background-color 0.4s ease, border-color 0.4s ease, box-shadow 0.4s ease;
   }
 
   html {
