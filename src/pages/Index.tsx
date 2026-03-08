@@ -13,8 +13,8 @@ import qrCodeImage from "@/assets/qr-code.png";
 const ease = [0.22, 1, 0.36, 1] as const;
 
 /* ─── CUSTOMIZABLE CONFIG ─── */
-const EXHIBITION_DATE = "2025-09-16T09:00:00"; // Change this to your exhibition date/time
-const EXHIBITION_TITLE = "September 16th, 2025";
+const EXHIBITION_DATE = "2026-09-16T09:00:00"; // Change this to your exhibition date/time
+const EXHIBITION_TITLE = "September 16th, 2026";
 const EXHIBITION_VENUE = "St. Anthony's School";
 
 /* ─── Floating Circuit Particles ─── */
