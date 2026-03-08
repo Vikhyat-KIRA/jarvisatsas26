@@ -130,3 +130,16 @@
   0% { background-position: -200% center; }
   100% { background-position: 200% center; }
 }
+
+@keyframes glitch-subtle {
+  0%, 100% { transform: translate(0); text-shadow: 0 0 8px hsl(var(--jarvis-cyan) / 0.4); }
+  10% { transform: translate(-1px, 1px); text-shadow: 1px 0 hsl(var(--jarvis-blue) / 0.3), -1px 0 hsl(var(--jarvis-cyan) / 0.3); }
+  20% { transform: translate(1px, -1px); }
+  30% { transform: translate(0); text-shadow: 0 0 8px hsl(var(--jarvis-cyan) / 0.4); }
+  50% { transform: translate(0.5px, 0); text-shadow: -1px 0 hsl(var(--jarvis-blue) / 0.2), 1px 0 hsl(var(--jarvis-cyan) / 0.2); }
+  60% { transform: translate(0); }
+}
+
+.glitch-text {
+  animation: glitch-subtle 3s ease-in-out infinite;
+}
