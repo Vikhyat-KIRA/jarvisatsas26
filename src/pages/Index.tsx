@@ -703,6 +703,149 @@ function Footer() {
   );
 }
 
+/* ─── Countdown Timer ─── */
+function Countdown() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const target = new Date("2025-09-16T09:00:00").getTime();
+
+  const [now, setNow] = useState(Date.now());
+  useEffect(() => {
+    const t = setInterval(() => setNow(Date.now()), 1000);
+    return () => clearInterval(t);
+  }, []);
+
+  const diff = Math.max(0, target - now);
+  const days = Math.floor(diff / 86400000);
+  const hours = Math.floor((diff % 86400000) / 3600000);
+  const minutes = Math.floor((diff % 3600000) / 60000);
+  const seconds = Math.floor((diff % 60000) / 1000);
+
+  const units = [
+    { label: "Days", value: days },
+    { label: "Hours", value: hours },
+    { label: "Minutes", value: minutes },
+    { label: "Seconds", value: seconds },
+  ];
+
+  return (
+    <Section id="countdown">
+      <div className="absolute inset-0 bg-gradient-to-b from-jarvis-cyan/[0.02] to-transparent pointer-events-none" />
+      <div ref={ref} className="max-w-4xl mx-auto px-6 lg:px-10 text-center">
+        <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5">
+          Exhibition Day
+        </motion.p>
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide mb-4">
+          September 16th, 2025
+        </motion.h2>
+        <motion.p initial={{ opacity: 0 }} animate={inView ? { opacity: 1 } : {}} transition={{ delay: 0.25 }} className="text-muted-foreground text-[15px] mb-12">
+          St. Anthony's School · JARVIS goes live.
+        </motion.p>
+
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.3 }} className="flex justify-center gap-4 sm:gap-6">
+          {units.map((u) => (
+            <div key={u.label} className="glass-card glow-border p-4 sm:p-6 min-w-[80px] sm:min-w-[100px]">
+              <p className="font-display font-bold text-3xl sm:text-5xl bg-gradient-to-b from-jarvis-cyan to-jarvis-blue bg-clip-text text-transparent">
+                {String(u.value).padStart(2, "0")}
+              </p>
+              <p className="text-[9px] sm:text-[10px] tracking-[0.3em] uppercase text-muted-foreground mt-2">{u.label}</p>
+            </div>
+          ))}
+        </motion.div>
+      </div>
+    </Section>
+  );
+}
+
+/* ─── Build Timeline ─── */
+const timeline = [
+  { phase: "Concept", date: "Jan 2025", desc: "Initial design philosophy drafted. Multi-board architecture conceived.", icon: "💡" },
+  { phase: "Prototyping", date: "Feb–Mar 2025", desc: "Chassis engineering, 6-point tripod base, BO motor drive system testing.", icon: "🔧" },
+  { phase: "Electronics", date: "Apr–May 2025", desc: "4-board integration, USB star topology, dual-juice power isolation.", icon: "⚡" },
+  { phase: "Software", date: "Jun–Jul 2025", desc: "Gemini AI API, OpenCV face tracking, STT/TTS pipeline, NeoPixel animations.", icon: "🧠" },
+  { phase: "Assembly", date: "Aug 2025", desc: "Final build, paint, cable management, exhibition prep and polish.", icon: "🎨" },
+  { phase: "Exhibition", date: "Sep 16, 2025", desc: "JARVIS goes live at St. Anthony's School.", icon: "🚀" },
+];
+
+function BuildTimeline() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <Section id="timeline">
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] rounded-full bg-jarvis-purple/[0.02] blur-[180px] pointer-events-none" />
+      <div ref={ref} className="max-w-4xl mx-auto px-6 lg:px-10">
+        <motion.p initial={{ opacity: 0, y: 15 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8 }} className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-5 text-center">
+          Journey
+        </motion.p>
+        <motion.h2 initial={{ opacity: 0, y: 35 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 1, delay: 0.12 }} className="font-display font-bold text-2xl sm:text-3xl md:text-[2.75rem] text-foreground tracking-wide text-center mb-14">
+          Build Timeline
+        </motion.h2>
+
+        <div className="relative">
+          {/* Vertical line */}
+          <div className="absolute left-6 sm:left-8 top-0 bottom-0 w-px bg-gradient-to-b from-jarvis-cyan/40 via-jarvis-blue/30 to-jarvis-purple/20" />
+
+          <div className="space-y-8">
+            {timeline.map((t, i) => (
+              <motion.div
+                key={t.phase}
+                initial={{ opacity: 0, x: -20 }}
+                animate={inView ? { opacity: 1, x: 0 } : {}}
+                transition={{ duration: 0.7, delay: 0.2 + i * 0.12, ease }}
+                className="relative pl-16 sm:pl-20"
+              >
+                {/* Dot */}
+                <div className="absolute left-[18px] sm:left-[26px] top-2 w-4 h-4 rounded-full border-2 border-jarvis-cyan/50 bg-background flex items-center justify-center">
+                  <div className="w-1.5 h-1.5 rounded-full bg-jarvis-cyan" />
+                </div>
+
+                <div className="glass-card glow-border p-5">
+                  <div className="flex items-center gap-3 mb-2">
+                    <span className="text-xl">{t.icon}</span>
+                    <div>
+                      <h3 className="font-display font-bold text-sm text-foreground">{t.phase}</h3>
+                      <p className="text-[10px] tracking-[0.2em] uppercase text-jarvis-cyan">{t.date}</p>
+                    </div>
+                  </div>
+                  <p className="text-[13px] text-muted-foreground leading-[1.7]">{t.desc}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </Section>
+  );
+}
+
+/* ─── QR Code Section ─── */
+function QRSection() {
+  const ref = useRef<HTMLDivElement>(null);
+  const inView = useInView(ref, { once: true, margin: "-80px" });
+
+  return (
+    <Section id="qr">
+      <div ref={ref} className="max-w-3xl mx-auto px-6 lg:px-10 text-center">
+        <motion.div initial={{ opacity: 0, y: 25 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, delay: 0.15 }} className="glass-card glow-border p-10 sm:p-14 inline-block">
+          <p className="text-[11px] tracking-[0.5em] uppercase text-jarvis-cyan/60 mb-6">Scan to Explore</p>
+          {/* QR code using a public API */}
+          <div className="bg-white rounded-2xl p-4 inline-block mb-6">
+            <img
+              src={`https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(window.location.origin)}&bgcolor=ffffff&color=000000`}
+              alt="QR code to this website"
+              className="w-[200px] h-[200px]"
+              loading="lazy"
+            />
+          </div>
+          <p className="font-display font-semibold text-sm text-foreground mb-1">Take JARVIS Home</p>
+          <p className="text-[12px] text-muted-foreground">Scan this code to open the Project JARVIS website on your phone.</p>
+        </motion.div>
+      </div>
+    </Section>
+  );
+}
+
 /* ─── Main Page ─── */
 const Index = () => (
   <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
@@ -714,7 +857,10 @@ const Index = () => (
     <WiringDiagram />
     <BuildProcess />
     <TechShowcase />
+    <BuildTimeline />
+    <Countdown />
     <Documentation />
+    <QRSection />
     <Team />
     <Footer />
   </div>
