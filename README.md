@@ -1,73 +1,106 @@
-# Welcome to your Lovable project
+# 🤖 Project JARVIS – AI Robotics System
 
-## Project info
+## Overview
+Project JARVIS is a robotics system designed to demonstrate real-time robot control, automation, and intelligent interaction through a modern web interface.
 
-**URL**: https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID
+The robot is connected to a web dashboard that allows live monitoring and control using WebSocket communication, enabling instant command execution and status updates.
 
-## How can I edit this code?
+This project was developed for a school robotics exhibition to showcase how software, networking, and embedded hardware can work together in a real robotic system.
 
-There are several ways of editing your application.
 
-**Use Lovable**
+## Core Features
 
-Simply visit the [Lovable Project](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and start prompting.
+- Real-time WebSocket communication
+- Live robot control dashboard
+- Sensor data monitoring
+- Interactive web interface
+- AI-inspired command system
+- Low-latency device communication
 
-Changes made via Lovable will be committed automatically to this repo.
+The system allows users to interact with the robot through a browser interface while receiving live telemetry data from the robot hardware.
 
-**Use your preferred IDE**
 
-If you want to work locally using your own IDE, you can clone this repo and push changes. Pushed changes will also be reflected in Lovable.
+## Live Control Panel
 
-The only requirement is having Node.js & npm installed - [install with nvm](https://github.com/nvm-sh/nvm#installing-and-updating)
+The robot includes a fully functional control panel built into the website.
 
-Follow these steps:
+Features include:
 
-```sh
-# Step 1: Clone the repository using the project's Git URL.
-git clone <YOUR_GIT_URL>
+- Movement control
+- System status monitoring
+- Sensor readings
+- Command execution
+- Real-time updates
 
-# Step 2: Navigate to the project directory.
-cd <YOUR_PROJECT_NAME>
+All communication between the robot and the interface is handled using WebSocket technology, allowing bidirectional communication without page reloads.
 
-# Step 3: Install the necessary dependencies.
-npm i
 
-# Step 4: Start the development server with auto-reloading and an instant preview.
-npm run dev
-```
+## System Architecture
 
-**Edit a file directly in GitHub**
+User Interface (Web Dashboard)
+        │
+        │ WebSocket Connection
+        ▼
+Control Server / Controller
+        │
+        ▼
+Robot Hardware
+(Microcontrollers + Sensors + Motors)
 
-- Navigate to the desired file(s).
-- Click the "Edit" button (pencil icon) at the top right of the file view.
-- Make your changes and commit the changes.
 
-**Use GitHub Codespaces**
+## Technologies Used
 
-- Navigate to the main page of your repository.
-- Click on the "Code" button (green button) near the top right.
-- Select the "Codespaces" tab.
-- Click on "New codespace" to launch a new Codespace environment.
-- Edit files directly within the Codespace and commit and push your changes once you're done.
-
-## What technologies are used for this project?
-
-This project is built with:
-
-- Vite
-- TypeScript
+Frontend
 - React
-- shadcn-ui
 - Tailwind CSS
+- TypeScript
 
-## How can I deploy this project?
+Backend / Communication
+- WebSocket protocol
+- Real-time data streaming
 
-Simply open [Lovable](https://lovable.dev/projects/REPLACE_WITH_PROJECT_ID) and click on Share -> Publish.
+Hardware
+- Microcontroller-based robotics platform
+- Sensors and motor controllers
 
-## Can I connect a custom domain to my Lovable project?
+Deployment
+- Vercel
 
-Yes, you can!
 
-To connect a domain, navigate to Project > Settings > Domains and click Connect Domain.
+## Purpose of the Project
 
-Read more here: [Setting up a custom domain](https://docs.lovable.dev/features/custom-domain#custom-domain)
+The goal of this project is to demonstrate how modern web technologies can interact directly with robotics hardware to create responsive and intelligent robotic systems.
+
+The project highlights:
+
+- Robotics engineering
+- Web-based robot control
+- Real-time communication systems
+- Human-robot interaction
+
+
+## Exhibition Demonstration
+
+During the exhibition, the system demonstrates:
+
+- Live robot control through the web interface
+- Real-time sensor updates
+- Instant command execution
+- Interactive user experience
+
+Visitors can observe how commands from the dashboard are transmitted to the robot and executed immediately.
+
+
+## Future Improvements
+
+- Voice command integration
+- AI decision system
+- Autonomous navigation mode
+- Mobile app interface
+- Advanced sensor integration
+
+
+## Developer
+
+Vikhyat Gupta  
+School Robotics Exhibition Project
